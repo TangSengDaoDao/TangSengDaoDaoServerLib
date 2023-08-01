@@ -519,6 +519,7 @@ func (c *Config) ConfigureWithViper(vp *viper.Viper) {
 	c.OSS.BucketURL = c.getString("oss.bucketURL", c.OSS.BucketURL)
 	c.OSS.AccessKeyID = c.getString("oss.accessKeyID", c.OSS.AccessKeyID)
 	c.OSS.AccessKeySecret = c.getString("oss.accessKeySecret", c.OSS.AccessKeySecret)
+	c.OSS.BucketName = c.getString("oss.bucketName", c.OSS.BucketName)
 	// minio
 	c.Minio.URL = c.getString("minio.url", c.Minio.URL)
 	c.Minio.AccessKeyID = c.getString("minio.accessKeyID", c.Minio.AccessKeyID)
@@ -854,6 +855,7 @@ type AliyunSMSConfig struct {
 // aliyun oss
 type OSSConfig struct {
 	Endpoint        string
+	BucketName      string // Bucket名称 比如 tangsengdaodao
 	BucketURL       string // 文件下载地址域名 对应aliyun的Bucket域名
 	AccessKeyID     string
 	AccessKeySecret string

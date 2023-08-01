@@ -5,6 +5,7 @@ import (
 	"errors"
 	"sync"
 
+	"github.com/TangSengDaoDao/TangSengDaoDaoServerLib/model"
 	"github.com/TangSengDaoDao/TangSengDaoDaoServerLib/pkg/wkhttp"
 )
 
@@ -80,6 +81,11 @@ type IMDatasource struct {
 	SystemUIDs func() ([]string, error)
 }
 
+type BussDataSource struct {
+	// 获取频道详情
+	ChannelGet func(channelID string, channelType uint8, loginUID string) (*model.ChannelResp, error)
+}
+
 // 模块
 type Module struct {
 	// api 路由
@@ -88,6 +94,8 @@ type Module struct {
 	SQLDir *SQLFS
 	// im 数据源
 	IMDatasource IMDatasource
+	// 业务数据源
+	BussDataSource BussDataSource
 	// 事件
 	Start func() error
 	Stop  func() error
