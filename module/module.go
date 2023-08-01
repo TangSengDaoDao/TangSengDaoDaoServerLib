@@ -3,25 +3,28 @@ package module
 import (
 	"fmt"
 	"io"
+	"path"
 	"sort"
 	"strings"
 
 	"github.com/TangSengDaoDao/TangSengDaoDaoServerLib/config"
 	"github.com/TangSengDaoDao/TangSengDaoDaoServerLib/pkg/register"
-	"github.com/TangSengDaoDao/TangSengDaoDaoServerLib/pkg/wkhttp"
 	"github.com/gocraft/dbr/v2"
 	migrate "github.com/rubenv/sql-migrate"
 )
 
-func Setup(r *wkhttp.WKHttp, ctx *config.Context) error {
+func Setup(ctx *config.Context) error {
 
 	// 获取所有模块
-	ms := register.GetModules()
+	ms := register.GetModules(ctx)
 
 	// 初始化SQL
-	var sqlfss []register.SQLFS
+	var sqlfss []*register.SQLFS
 	for _, m := range ms {
-		sqlfss = append(sqlfss, m.SQLDir)
+		if m.SQLDir != nil {
+			sqlfss = append(sqlfss, m.SQLDir)
+		}
+
 	}
 	err := executeSQL(sqlfss, ctx.DB())
 	if err != nil {
@@ -29,15 +32,48 @@ func Setup(r *wkhttp.WKHttp, ctx *config.Context) error {
 	}
 	// 注册api
 	for _, m := range ms {
-		a := m.SetupAPI(ctx)
-		a.Route(r)
+		if m.SetupAPI != nil {
+			a := m.SetupAPI()
+			if a != nil {
+				a.Route(ctx.GetHttpRoute())
+			}
+		}
 	}
 	return nil
 
 }
 
+func Start(ctx *config.Context) error {
+	// 获取所有模块
+	ms := register.GetModules(ctx)
+	for _, m := range ms {
+		if m.Start != nil {
+			err := m.Start()
+			if err != nil {
+				return err
+			}
+		}
+
+	}
+	return nil
+}
+func Stop(ctx *config.Context) error {
+	// 获取所有模块
+	ms := register.GetModules(ctx)
+	for _, m := range ms {
+		if m.Stop != nil {
+			err := m.Stop()
+			if err != nil {
+				return err
+			}
+		}
+
+	}
+	return nil
+}
+
 // 执行sql
-func executeSQL(sqlfss []register.SQLFS, session *dbr.Session) error {
+func executeSQL(sqlfss []*register.SQLFS, session *dbr.Session) error {
 	migrations := &FileDirMigrationSource{
 		sqlfss: sqlfss,
 	}
@@ -56,7 +92,7 @@ func (b byID) Less(i, j int) bool { return b[i].Less(b[j]) }
 
 // FileDirMigrationSource 文件目录源 遇到目录进行递归获取
 type FileDirMigrationSource struct {
-	sqlfss []register.SQLFS
+	sqlfss []*register.SQLFS
 }
 
 // FindMigrations FindMigrations
@@ -80,17 +116,16 @@ func (f FileDirMigrationSource) FindMigrations() ([]*migrate.Migration, error) {
 	return migrations, nil
 }
 
-func (f FileDirMigrationSource) findMigrations(fs register.SQLFS, migrations *[]*migrate.Migration) error {
+func (f FileDirMigrationSource) findMigrations(fs *register.SQLFS, migrations *[]*migrate.Migration) error {
 
 	files, err := fs.ReadDir("sql")
 	if err != nil {
 		return err
 	}
-
 	for _, info := range files {
 
 		if strings.HasSuffix(info.Name(), ".sql") {
-			file, err := fs.Open(info.Name())
+			file, err := fs.Open(path.Join("sql", info.Name()))
 			if err != nil {
 				return fmt.Errorf("error while opening %s: %s", info.Name(), err)
 			}

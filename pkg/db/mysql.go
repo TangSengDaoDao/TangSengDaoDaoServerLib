@@ -13,7 +13,7 @@ import (
 )
 
 // NewMySQL 创建一个MySQL db，[path]db存储路径 [sqlDir]sql脚本目录
-func NewMySQL(addr string, sqlDir string, migration bool) *dbr.Session {
+func NewMySQL(addr string) *dbr.Session {
 
 	conn, err := dbr.Open("mysql", addr, nil)
 	if err != nil {
@@ -25,14 +25,6 @@ func NewMySQL(addr string, sqlDir string, migration bool) *dbr.Session {
 	conn.Ping()
 
 	session := conn.NewSession(nil)
-
-	if migration {
-		err = Migration(sqlDir, session)
-		if err != nil {
-			fmt.Println("Migration error", addr, err)
-			panic(err)
-		}
-	}
 
 	return session
 }

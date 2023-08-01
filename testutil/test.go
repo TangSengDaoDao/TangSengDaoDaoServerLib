@@ -55,7 +55,7 @@ func NewTestServer(args ...string) (*server.Server, *config.Context) {
 	// }
 
 	// 创建server
-	s := server.New(ctx.GetConfig().Addr, ctx.GetConfig().SSLAddr, ctx.GetConfig().GRPCAddr)
+	s := server.New(ctx)
 	// ctx.Server = s
 	s.GetRoute().UseGin(ctx.Tracer().GinMiddle())
 

@@ -2,6 +2,8 @@ package register
 
 import (
 	"embed"
+	"errors"
+	"sync"
 
 	"github.com/TangSengDaoDao/TangSengDaoDaoServerLib/pkg/wkhttp"
 )
@@ -11,53 +13,111 @@ type APIRouter interface {
 	Route(r *wkhttp.WKHttp)
 }
 
-var apiRoutes = make([]APIRouter, 0)
+// var apiRoutes = make([]APIRouter, 0)
 
-// Add 添加api
-func Add(r APIRouter) {
-	apiRoutes = append(apiRoutes, r)
+// // Add 添加api
+// func Add(r APIRouter) {
+// 	apiRoutes = append(apiRoutes, r)
+// }
+
+// var taskRoutes = make([]TaskRouter, 0)
+
+// // GetRoutes 获取所有路由者
+// func GetRoutes() []APIRouter {
+// 	return apiRoutes
+// }
+
+// // TaskRouter task路由者
+// type TaskRouter interface {
+// 	RegisterTasks()
+// }
+
+// // AddTask 添加任务
+// func AddTask(task TaskRouter) {
+// 	taskRoutes = append(taskRoutes, task)
+// }
+
+// // GetTasks 获取所有任务
+// func GetTasks() []TaskRouter {
+// 	return taskRoutes
+// }
+
+type ModuleFnc func(ctx interface{}) Module
+
+var modules = make([]ModuleFnc, 0)
+
+type IMDatasourceType int
+
+const (
+	IMDatasourceTypeNone        IMDatasourceType = iota
+	IMDatasourceTypeSubscribers                  = 1
+	IMDatasourceTypeChannelInfo                  = 1 << 1
+	IMDatasourceTypeBlacklist                    = 1 << 2
+	IMDatasourceTypeWhitelist                    = 1 << 3
+	IMDatasourceTypeSystemUIDs                   = 1 << 4
+)
+
+func (i IMDatasourceType) Has(d IMDatasourceType) bool {
+	return i&d == d
 }
 
-var taskRoutes = make([]TaskRouter, 0)
+var (
+	ErrDatasourceNotProcess error = errors.New("datasource not process")
+)
 
-// GetRoutes 获取所有路由者
-func GetRoutes() []APIRouter {
-	return apiRoutes
+type IMDatasource struct {
+	// 是否存在数据
+	HasData func(channelID string, channelType uint8) IMDatasourceType
+	// 获取订阅者
+	Subscribers func(channelID string, channelType uint8) ([]string, error)
+	// 获取频道信息
+	ChannelInfo func(channelID string, channelType uint8) (map[string]interface{}, error)
+	// 黑名单列表
+	Blacklist func(channelID string, channelType uint8) ([]string, error)
+	// 白名单列表
+	Whitelist func(channelID string, channelType uint8) ([]string, error)
+	// 系统账号
+	SystemUIDs func() ([]string, error)
 }
-
-// TaskRouter task路由者
-type TaskRouter interface {
-	RegisterTasks()
-}
-
-// AddTask 添加任务
-func AddTask(task TaskRouter) {
-	taskRoutes = append(taskRoutes, task)
-}
-
-// GetTasks 获取所有任务
-func GetTasks() []TaskRouter {
-	return taskRoutes
-}
-
-var modules = make([]Module, 0)
 
 // 模块
 type Module struct {
-	SetupAPI func(ctx interface{}) APIRouter // api 路由
-	SQLDir   SQLFS                           // sql目录
+	// api 路由
+	SetupAPI func() APIRouter
+	// sql目录
+	SQLDir *SQLFS
+	// im 数据源
+	IMDatasource IMDatasource
+	// 事件
+	Start func() error
+	Stop  func() error
 }
 
-func AddModule(m Module) {
-	modules = append(modules, m)
-
-	m.SQLDir.ReadDir("sql")
+func AddModule(moduleFnc func(ctx interface{}) Module) {
+	modules = append(modules, moduleFnc)
 }
 
 type SQLFS struct {
 	embed.FS
 }
 
-func GetModules() []Module {
-	return modules
+func NewSQLFS(fs embed.FS) *SQLFS {
+
+	return &SQLFS{
+		FS: fs,
+	}
+}
+
+var once sync.Once
+var moduleList []Module
+
+func GetModules(ctx any) []Module {
+
+	once.Do(func() {
+		for _, m := range modules {
+			moduleList = append(moduleList, m(ctx))
+		}
+	})
+
+	return moduleList
 }

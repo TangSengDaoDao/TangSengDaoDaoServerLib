@@ -1,37 +1,37 @@
 package server
 
 import (
-	"net"
 	"os"
 	"path/filepath"
 
+	"github.com/TangSengDaoDao/TangSengDaoDaoServerLib/config"
+	"github.com/TangSengDaoDao/TangSengDaoDaoServerLib/module"
 	"github.com/TangSengDaoDao/TangSengDaoDaoServerLib/pkg/log"
 	"github.com/TangSengDaoDao/TangSengDaoDaoServerLib/pkg/wkhttp"
 	"github.com/judwhite/go-svc"
 	"github.com/unrolled/secure"
-	"google.golang.org/grpc"
 )
 
 // Server唐僧叨叨server
 type Server struct {
 	r *wkhttp.WKHttp
 	log.TLog
-	sslAddr    string
-	addr       string
-	GrpcServer *grpc.Server
-	grpcAddr   string
+	sslAddr  string
+	addr     string
+	grpcAddr string
+	ctx      *config.Context
 }
 
 // New 创建悟空聊天server
-func New(addr string, sslAddr string, grpcAddr string) *Server {
+func New(ctx *config.Context) *Server {
 	r := wkhttp.New()
 	r.Use(wkhttp.CORSMiddleware())
 	s := &Server{
-		r:          r,
-		addr:       addr,
-		sslAddr:    sslAddr,
-		grpcAddr:   grpcAddr,
-		GrpcServer: grpc.NewServer(),
+		ctx:      ctx,
+		r:        r,
+		addr:     ctx.GetConfig().Addr,
+		sslAddr:  ctx.GetConfig().SSLAddr,
+		grpcAddr: ctx.GetConfig().GRPCAddr,
 	}
 	return s
 }
@@ -89,22 +89,17 @@ func (s *Server) Start() error {
 		}
 	}()
 
-	lis, err := net.Listen("tcp", s.grpcAddr)
+	err := module.Start(s.ctx)
 	if err != nil {
 		return err
 	}
-	go func() {
-		err = s.GrpcServer.Serve(lis)
-		if err != nil {
-			panic(err)
-		}
-	}()
+
 	return nil
 }
 
 func (s *Server) Stop() error {
-	s.GrpcServer.Stop()
-	return nil
+
+	return module.Stop(s.ctx)
 }
 
 func TlsHandler(sslAddr string) wkhttp.HandlerFunc {

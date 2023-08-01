@@ -1,6 +1,7 @@
 package config
 
 import (
+	"sync"
 	"time"
 
 	"github.com/RussellLuo/timingwheel"
@@ -35,6 +36,9 @@ type Context struct {
 	aysncTask      *AsyncTask               // 异步任务
 	timingWheel    *timingwheel.TimingWheel // Time wheel delay task
 
+	httpRouter *wkhttp.WKHttp
+
+	valueMap sync.Map
 }
 
 // NewContext NewContext
@@ -52,6 +56,7 @@ func NewContext(cfg *Config) *Context {
 		RobotEventPool: pool.StartDispatcher(cfg.Robot.EventPoolSize),
 		aysncTask:      NewAsyncTask(cfg),
 		timingWheel:    timingwheel.NewTimingWheel(cfg.TimingWheelTick.Duration, cfg.TimingWheelSize),
+		valueMap:       sync.Map{},
 	}
 	c.tracer, err = NewTracer(cfg)
 	if err != nil {
@@ -71,7 +76,7 @@ func (c *Context) GetConfig() *Config {
 func (c *Context) NewMySQL() *dbr.Session {
 
 	if c.mySQLSession == nil {
-		c.mySQLSession = db.NewMySQL(c.cfg.DB.MySQLAddr, c.cfg.DB.SQLDir, c.cfg.DB.Migration)
+		c.mySQLSession = db.NewMySQL(c.cfg.DB.MySQLAddr)
 	}
 
 	return c.mySQLSession
@@ -139,6 +144,23 @@ func (c *Context) Schedule(interval time.Duration, f func()) *timingwheel.Timer 
 	return c.timingWheel.ScheduleFunc(&everyScheduler{
 		Interval: interval,
 	}, f)
+}
+
+func (c *Context) GetHttpRoute() *wkhttp.WKHttp {
+	return c.httpRouter
+}
+
+func (c *Context) SetHttpRoute(r *wkhttp.WKHttp) {
+	c.httpRouter = r
+}
+
+func (c *Context) SetValue(value interface{}, key string) {
+	c.valueMap.Store(key, value)
+}
+
+func (c *Context) Value(key string) any {
+	v, _ := c.valueMap.Load(key)
+	return v
 }
 
 // OnlineStatus 在线状态
