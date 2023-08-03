@@ -136,10 +136,9 @@ func GetModules(ctx any) []Module {
 
 func GetModuleByName(name string, ctx any) Module {
 
-	for _, m := range modules {
-		ml := m(ctx)
-		if ml.Name == name {
-			return ml
+	for _, m := range moduleList {
+		if m.Name == name {
+			return m
 		}
 	}
 	return Module{}
