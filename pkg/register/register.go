@@ -88,10 +88,14 @@ type BussDataSource struct {
 
 // 模块
 type Module struct {
+	// 模块名称
+	Name string
 	// api 路由
 	SetupAPI func() APIRouter
 	// sql目录
 	SQLDir *SQLFS
+	// swagger文件
+	Swagger string
 	// im 数据源
 	IMDatasource IMDatasource
 	// 业务数据源
@@ -128,4 +132,15 @@ func GetModules(ctx any) []Module {
 	})
 
 	return moduleList
+}
+
+func GetModuleByName(name string, ctx any) Module {
+
+	for _, m := range modules {
+		ml := m(ctx)
+		if ml.Name == name {
+			return ml
+		}
+	}
+	return Module{}
 }

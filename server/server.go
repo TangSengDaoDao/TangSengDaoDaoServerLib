@@ -1,12 +1,15 @@
 package server
 
 import (
+	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/TangSengDaoDao/TangSengDaoDaoServerLib/config"
 	"github.com/TangSengDaoDao/TangSengDaoDaoServerLib/module"
 	"github.com/TangSengDaoDao/TangSengDaoDaoServerLib/pkg/log"
+	"github.com/TangSengDaoDao/TangSengDaoDaoServerLib/pkg/register"
 	"github.com/TangSengDaoDao/TangSengDaoDaoServerLib/pkg/wkhttp"
 	"github.com/judwhite/go-svc"
 	"github.com/unrolled/secure"
@@ -51,6 +54,17 @@ func (s *Server) run(sslAddr string, addr ...string) error {
 	s.r.Static("/web", "./assets/web")
 	s.r.Any("/v1/ping", func(c *wkhttp.Context) {
 		c.ResponseOK()
+	})
+
+	s.r.Any("/swagger/:module", func(c *wkhttp.Context) {
+		m := c.Param("module")
+		module := register.GetModuleByName(m, s.ctx)
+		if strings.TrimSpace(module.Swagger) == "" {
+			c.Status(http.StatusNotFound)
+			return
+		}
+		c.String(http.StatusOK, module.Swagger)
+
 	})
 
 	if len(addr) != 0 {
