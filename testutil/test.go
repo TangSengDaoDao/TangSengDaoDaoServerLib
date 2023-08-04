@@ -3,7 +3,6 @@ package testutil
 import (
 	// "github.com/TangSengDaoDao/TangSengDaoDaoServer/modules/base/event"
 	"github.com/TangSengDaoDao/TangSengDaoDaoServerLib/config"
-	"github.com/TangSengDaoDao/TangSengDaoDaoServerLib/pkg/db"
 	"github.com/TangSengDaoDao/TangSengDaoDaoServerLib/server"
 )
 
@@ -27,11 +26,6 @@ func NewTestServer(args ...string) (*server.Server, *config.Context) {
 	// cfg.TracingOn = true
 	// cfg.TracerAddr = "49.235.106.135:6831"
 	cfg.DB.MySQLAddr = "root:demo@tcp(127.0.0.1)/test?charset=utf8mb4&parseTime=true"
-	sqlDir := "../../../assets/sql"
-	if len(args) > 0 {
-		sqlDir = args[0]
-	}
-	cfg.DB.SQLDir = sqlDir
 	cfg.DB.Migration = false
 	ctx := config.NewContext(cfg)
 
@@ -40,8 +34,6 @@ func NewTestServer(args ...string) (*server.Server, *config.Context) {
 	if err != nil {
 		panic(err)
 	}
-
-	db.Migration(cfg.DB.SQLDir, ctx.DB())
 
 	// ctx.Event = event.New(ctx)
 	err = ctx.Cache().Set(cfg.Cache.TokenCachePrefix+Token, UID+"@test")

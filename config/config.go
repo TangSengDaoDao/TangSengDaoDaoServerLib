@@ -94,7 +94,6 @@ type Config struct {
 	// ---------- db相关配置 ----------
 	DB struct {
 		MySQLAddr          string // mysql的连接信息
-		SQLDir             string // 数据库脚本路径
 		Migration          bool   // 是否合并数据库
 		RedisAddr          string // redis地址
 		RedisPass          string // redis密码
@@ -267,14 +266,12 @@ func New() *Config {
 		// ---------- db配置 ----------
 		DB: struct {
 			MySQLAddr          string
-			SQLDir             string
 			Migration          bool
 			RedisAddr          string
 			RedisPass          string
 			AsynctaskRedisAddr string
 		}{
 			MySQLAddr: "root:demo@tcp(127.0.0.1:3306)/test?charset=utf8mb4&parseTime=true",
-			SQLDir:    "assets/sql",
 			Migration: true,
 			RedisAddr: "127.0.0.1:6379",
 		},
@@ -486,7 +483,6 @@ func (c *Config) ConfigureWithViper(vp *viper.Viper) {
 	c.configureLog()
 	// #################### db ####################
 	c.DB.MySQLAddr = c.getString("db.mysqlAddr", c.DB.MySQLAddr)
-	c.DB.SQLDir = c.getString("db.sqlDir", c.DB.SQLDir)
 	c.DB.Migration = c.getBool("db.migration", c.DB.Migration)
 	c.DB.RedisAddr = c.getString("db.redisAddr", c.DB.RedisAddr)
 	c.DB.RedisPass = c.getString("db.redisPass", c.DB.RedisPass)
@@ -522,6 +518,11 @@ func (c *Config) ConfigureWithViper(vp *viper.Viper) {
 	c.OSS.BucketName = c.getString("oss.bucketName", c.OSS.BucketName)
 	// minio
 	c.Minio.URL = c.getString("minio.url", c.Minio.URL)
+	if c.FileService == FileServiceMinio {
+		if strings.TrimSpace(c.Minio.URL) == "" {
+			c.Minio.URL = fmt.Sprintf("http://%s:9000", c.External.IP)
+		}
+	}
 	c.Minio.AccessKeyID = c.getString("minio.accessKeyID", c.Minio.AccessKeyID)
 	c.Minio.SecretAccessKey = c.getString("minio.secretAccessKey", c.Minio.SecretAccessKey)
 	// seaweedfs
