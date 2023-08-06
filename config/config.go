@@ -250,6 +250,7 @@ func New() *Config {
 		MessageSaveAcrossDevice:     true,
 		EventPoolSize:               100,
 		WelcomeMessage:              "欢迎使用{{appName}}",
+		RootDir:                     "tsdddata",
 
 		// ---------- 外网配置 ----------
 		External: struct {
