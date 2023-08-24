@@ -71,12 +71,12 @@ type Config struct {
 	GRPCAddr                    string // grpc的通信地址 （建议内网通信）
 	SSLAddr                     string // ssl 监听地址
 	MessageSaveAcrossDevice     bool   // 消息是否跨设备保存（换设备登录消息是否还能同步到老消息）
-	WelcomeMessage              string //登录注册欢迎语
+	WelcomeMessage              string // 登录注册欢迎语
 	PhoneSearchOff              bool   // 是否关闭手机号搜索
 	OnlineStatusOn              bool   // 是否开启在线状态显示
 	GroupUpgradeWhenMemberCount int    // 当成员数量大于此配置时 自动升级为超级群 默认为 1000
 	EventPoolSize               int64  // 事件任务池大小
-
+	AdminPwd                    string // 后台管理默认密码
 	// ---------- 外网配置 ----------
 	External struct {
 		IP          string // 外网IP
@@ -251,7 +251,7 @@ func New() *Config {
 		EventPoolSize:               100,
 		WelcomeMessage:              "欢迎使用{{appName}}",
 		RootDir:                     "tsdddata",
-
+		AdminPwd:                    "",
 		// ---------- 外网配置 ----------
 		External: struct {
 			IP          string
@@ -458,6 +458,7 @@ func (c *Config) ConfigureWithViper(vp *viper.Viper) {
 	c.OnlineStatusOn = c.getBool("onlineStatusOn", c.OnlineStatusOn)
 	c.GroupUpgradeWhenMemberCount = c.getInt("groupUpgradeWhenMemberCount", c.GroupUpgradeWhenMemberCount)
 	c.EventPoolSize = c.getInt64("eventPoolSize", c.EventPoolSize)
+	c.AdminPwd = c.getString("adminPwd", c.AdminPwd)
 
 	// #################### 外网配置 ####################
 	c.External.IP = c.getString("external.ip", c.External.IP)
