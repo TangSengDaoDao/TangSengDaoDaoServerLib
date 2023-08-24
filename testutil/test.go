@@ -3,6 +3,7 @@ package testutil
 import (
 	// "github.com/TangSengDaoDao/TangSengDaoDaoServer/modules/base/event"
 	"github.com/TangSengDaoDao/TangSengDaoDaoServerLib/config"
+	"github.com/TangSengDaoDao/TangSengDaoDaoServerLib/module"
 	"github.com/TangSengDaoDao/TangSengDaoDaoServerLib/server"
 )
 
@@ -50,6 +51,11 @@ func NewTestServer(args ...string) (*server.Server, *config.Context) {
 	s := server.New(ctx)
 	// ctx.Server = s
 	s.GetRoute().UseGin(ctx.Tracer().GinMiddle())
+	ctx.SetHttpRoute(s.GetRoute())
+	err = module.Setup(ctx)
+	if err != nil {
+		panic(err)
+	}
 
 	return s, ctx
 
