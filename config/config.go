@@ -186,6 +186,7 @@ type Config struct {
 		Off           bool // 是否关闭注册
 		OnlyChina     bool // 是否仅仅中国手机号可以注册
 		StickerAddOff bool // 是否关闭注册添加表情
+		UsernameOn    bool // 是否开启用户名注册
 	}
 	// ---------- push ----------
 	Push struct {
@@ -586,6 +587,7 @@ func (c *Config) ConfigureWithViper(vp *viper.Viper) {
 	c.Register.Off = c.getBool("register.off", c.Register.Off)
 	c.Register.OnlyChina = c.getBool("register.onlyChina", c.Register.OnlyChina)
 	c.Register.StickerAddOff = c.getBool("register.stickerAddOff", c.Register.StickerAddOff)
+	c.Register.UsernameOn = c.getBool("register.usernameOn", c.Register.UsernameOn)
 
 	//#################### push ####################
 	c.Push.ContentDetailOn = c.getBool("push.contentDetailOn", c.Push.ContentDetailOn)
