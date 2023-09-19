@@ -151,6 +151,18 @@ func (c *Context) CheckLoginRole() error {
 	return nil
 }
 
+// CheckLoginRoleIsSuperAdmin 检查登录用户为超级管理员
+func (c *Context) CheckLoginRoleIsSuperAdmin() error {
+	role := c.GetLoginRole()
+	if role == "" {
+		return errors.New("登录用户角色错误")
+	}
+	if role != string(SuperAdmin) {
+		return errors.New("该用户无权执行此操作")
+	}
+	return nil
+}
+
 // HandlerFunc HandlerFunc
 type HandlerFunc func(c *Context)
 
