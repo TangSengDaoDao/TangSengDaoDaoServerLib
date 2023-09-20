@@ -38,7 +38,8 @@ type Context struct {
 
 	httpRouter *wkhttp.WKHttp
 
-	valueMap sync.Map
+	valueMap  sync.Map
+	SetupTask bool // 是否安装task
 }
 
 // NewContext NewContext

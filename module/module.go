@@ -38,6 +38,14 @@ func Setup(ctx *config.Context) error {
 				a.Route(ctx.GetHttpRoute())
 			}
 		}
+		if ctx.SetupTask {
+			if m.SetupTask != nil {
+				t := m.SetupTask()
+				if t != nil {
+					t.RegisterTasks()
+				}
+			}
+		}
 	}
 	return nil
 
