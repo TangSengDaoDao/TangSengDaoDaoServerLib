@@ -91,7 +91,8 @@ type Module struct {
 	// 模块名称
 	Name string
 	// api 路由
-	SetupAPI func() APIRouter
+	SetupAPI  func() APIRouter
+	SetupTask func() TaskRouter
 	// sql目录
 	SQLDir *SQLFS
 	// swagger文件
@@ -142,4 +143,9 @@ func GetModuleByName(name string, ctx any) Module {
 		}
 	}
 	return Module{}
+}
+
+// TaskRouter task路由者
+type TaskRouter interface {
+	RegisterTasks()
 }

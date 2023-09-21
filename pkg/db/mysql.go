@@ -13,16 +13,15 @@ import (
 )
 
 // NewMySQL 创建一个MySQL db，[path]db存储路径 [sqlDir]sql脚本目录
-func NewMySQL(addr string) *dbr.Session {
+func NewMySQL(addr string, maxOpenConns int, maxIdleConns int, connMaxLifetime time.Duration) *dbr.Session {
 
 	conn, err := dbr.Open("mysql", addr, nil)
 	if err != nil {
 		panic(err)
 	}
-	conn.SetMaxOpenConns(2000)
-	conn.SetMaxIdleConns(1000)
-	conn.SetConnMaxLifetime(time.Second * 60 * 60 * 4) //mysql 默认超时时间为 60*60*8=28800 SetConnMaxLifetime设置为小于数据库超时时间即可
-	conn.Ping()
+	conn.SetMaxOpenConns(maxOpenConns)
+	conn.SetMaxIdleConns(maxIdleConns)
+	conn.SetConnMaxLifetime(connMaxLifetime) //mysql 默认超时时间为 60*60*8=28800 SetConnMaxLifetime设置为小于数据库超时时间即可
 
 	session := conn.NewSession(nil)
 

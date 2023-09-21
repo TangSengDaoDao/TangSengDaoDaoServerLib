@@ -825,6 +825,7 @@ type MessageResp struct {
 	MessageID   int64             `json:"message_id"`          // 服务端的消息ID(全局唯一)
 	MessageSeq  uint32            `json:"message_seq"`         // 消息序列号 （用户唯一，有序递增）
 	ClientMsgNo string            `json:"client_msg_no"`       // 客户端消息唯一编号
+	Expire      uint32            `json:"expire"`              // 消息过期时间
 	FromUID     string            `json:"from_uid"`            // 发送者UID
 	ToUID       string            `json:"to_uid"`              // 接受者uid
 	ChannelID   string            `json:"channel_id"`          // 频道ID

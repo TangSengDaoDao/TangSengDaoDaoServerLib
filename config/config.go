@@ -93,11 +93,14 @@ type Config struct {
 	}
 	// ---------- db相关配置 ----------
 	DB struct {
-		MySQLAddr          string // mysql的连接信息
-		Migration          bool   // 是否合并数据库
-		RedisAddr          string // redis地址
-		RedisPass          string // redis密码
-		AsynctaskRedisAddr string // 异步任务的redis地址 不写默认为RedisAddr的地址
+		MySQLAddr            string        // mysql的连接信息
+		MySQLMaxOpenConns    int           // 最大连接数
+		MySQLMaxIdleConns    int           // 最大空闲连接数
+		MySQLConnMaxLifetime time.Duration // 连接最大生命周期
+		Migration            bool          // 是否合并数据库
+		RedisAddr            string        // redis地址
+		RedisPass            string        // redis密码
+		AsynctaskRedisAddr   string        // 异步任务的redis地址 不写默认为RedisAddr的地址
 	}
 	// ---------- 分布式配置 ----------
 	Cluster struct {
@@ -270,15 +273,21 @@ func New() *Config {
 
 		// ---------- db配置 ----------
 		DB: struct {
-			MySQLAddr          string
-			Migration          bool
-			RedisAddr          string
-			RedisPass          string
-			AsynctaskRedisAddr string
+			MySQLAddr            string
+			MySQLMaxOpenConns    int
+			MySQLMaxIdleConns    int
+			MySQLConnMaxLifetime time.Duration
+			Migration            bool
+			RedisAddr            string
+			RedisPass            string
+			AsynctaskRedisAddr   string
 		}{
-			MySQLAddr: "root:demo@tcp(127.0.0.1:3306)/test?charset=utf8mb4&parseTime=true",
-			Migration: true,
-			RedisAddr: "127.0.0.1:6379",
+			MySQLAddr:            "root:demo@tcp(127.0.0.1:3306)/test?charset=utf8mb4&parseTime=true",
+			MySQLMaxOpenConns:    100,
+			MySQLMaxIdleConns:    10,
+			MySQLConnMaxLifetime: time.Second * 60 * 60 * 4, //mysql 默认超时时间为 60*60*8=28800 SetConnMaxLifetime设置为小于数据库超时时间即可
+			Migration:            true,
+			RedisAddr:            "127.0.0.1:6379",
 		},
 		// ---------- 分布式配置 ----------
 		Cluster: struct {
@@ -489,6 +498,9 @@ func (c *Config) ConfigureWithViper(vp *viper.Viper) {
 	c.configureLog()
 	// #################### db ####################
 	c.DB.MySQLAddr = c.getString("db.mysqlAddr", c.DB.MySQLAddr)
+	c.DB.MySQLMaxOpenConns = c.getInt("db.mysqlMaxOpenConns", c.DB.MySQLMaxOpenConns)
+	c.DB.MySQLMaxIdleConns = c.getInt("db.mysqlMaxIdleConns", c.DB.MySQLMaxIdleConns)
+	c.DB.MySQLConnMaxLifetime = c.getDuration("db.mysqlConnMaxLifetime", c.DB.MySQLConnMaxLifetime)
 	c.DB.Migration = c.getBool("db.migration", c.DB.Migration)
 	c.DB.RedisAddr = c.getString("db.redisAddr", c.DB.RedisAddr)
 	c.DB.RedisPass = c.getString("db.redisPass", c.DB.RedisPass)
