@@ -201,7 +201,10 @@ type Config struct {
 		VIVO            VIVOPush // vivo推送
 		OPPO            OPPOPush // oppo推送
 	}
-
+	// ---------- message ----------
+	Message struct {
+		SendMessageOn bool // 是否开启接口发送发送消息
+	}
 	// ---------- wechat ----------
 	Wechat struct {
 		AppID     string // 微信appid 在开放平台内
@@ -629,6 +632,9 @@ func (c *Config) ConfigureWithViper(vp *viper.Viper) {
 	c.Push.OPPO.AppKey = c.getString("push.oppo.appKey", c.Push.OPPO.AppKey)
 	c.Push.OPPO.AppSecret = c.getString("push.oppo.appSecret", c.Push.OPPO.AppSecret)
 	c.Push.OPPO.MasterSecret = c.getString("push.oppo.masterSecret", c.Push.OPPO.MasterSecret)
+
+	//#################### message ####################
+	c.Message.SendMessageOn = c.getBool("message.sendMessageOn", c.Message.SendMessageOn)
 
 	//#################### weixin ####################
 	c.Wechat.AppID = c.getString("wechat.appID", c.Wechat.AppID)
