@@ -896,8 +896,10 @@ type SeaweedConfig struct {
 
 // UnismsConfig unisms短信
 type UnismsConfig struct {
-	Signature   string
-	AccessKeyID string
+	Signature       string
+	AccessKeyID     string
+	AccessKeySecret string
+	TemplateId      string
 }
 
 // AliyunInternationalSMSConfig 阿里云短信
