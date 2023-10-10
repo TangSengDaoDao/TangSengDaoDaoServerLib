@@ -552,6 +552,8 @@ func (c *Config) ConfigureWithViper(vp *viper.Viper) {
 	// UniSMS
 	c.UniSMS.AccessKeyID = c.getString("uniSMS.accessKeyID", c.UniSMS.AccessKeyID)
 	c.UniSMS.Signature = c.getString("uniSMS.signature", c.UniSMS.Signature)
+	c.UniSMS.AccessKeySecret = c.getString("uniSMS.accessKeySecret", c.UniSMS.AccessKeySecret)
+	c.UniSMS.TemplateId = c.getString("uniSMS.templateId", c.UniSMS.TemplateId)
 	// AliyunSMS
 	c.AliyunSMS.AccessKeyID = c.getString("aliyunSMS.accessKeyID", c.AliyunSMS.AccessKeyID)
 	c.AliyunSMS.AccessSecret = c.getString("aliyunSMS.accessSecret", c.AliyunSMS.AccessSecret)
