@@ -541,6 +541,15 @@ func (c *Config) ConfigureWithViper(vp *viper.Viper) {
 			c.Minio.URL = fmt.Sprintf("http://%s:9000", c.External.IP)
 		}
 	}
+	c.Minio.UploadURL = c.getString("minio.uploadURL", c.Minio.UploadURL)
+	if strings.TrimSpace(c.Minio.UploadURL) == "" {
+		c.Minio.UploadURL = c.Minio.URL
+	}
+	c.Minio.DownloadURL = c.getString("minio.downloadURL", c.Minio.DownloadURL)
+	if strings.TrimSpace(c.Minio.DownloadURL) == "" {
+		c.Minio.DownloadURL = c.Minio.URL
+	}
+
 	c.Minio.AccessKeyID = c.getString("minio.accessKeyID", c.Minio.AccessKeyID)
 	c.Minio.SecretAccessKey = c.getString("minio.secretAccessKey", c.Minio.SecretAccessKey)
 	// seaweedfs
@@ -887,7 +896,9 @@ type OSSConfig struct {
 }
 
 type MinioConfig struct {
-	URL             string // 文件下载上传基地址 例如： http://127.0.0.1:9000
+	URL             string // 文件下载上传或下载基地址 例如： http://127.0.0.1:9000
+	UploadURL       string // 文件上传基地址 如果为空则使用URL地址
+	DownloadURL     string // 文件下载基地址 如果为空则使用URL地址
 	AccessKeyID     string //minio accessKeyID
 	SecretAccessKey string //minio secretAccessKey
 }
