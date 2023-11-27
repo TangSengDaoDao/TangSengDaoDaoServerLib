@@ -91,8 +91,10 @@ type Module struct {
 	// 模块名称
 	Name string
 	// api 路由
-	SetupAPI  func() APIRouter
+	SetupAPI func() APIRouter
+	// task 路由
 	SetupTask func() TaskRouter
+	// 服务
 	// sql目录
 	SQLDir *SQLFS
 	// swagger文件
@@ -101,6 +103,8 @@ type Module struct {
 	IMDatasource IMDatasource
 	// 业务数据源
 	BussDataSource BussDataSource
+	// 服务
+	Service interface{}
 	// 事件
 	Start func() error
 	Stop  func() error
@@ -143,6 +147,16 @@ func GetModuleByName(name string, ctx any) Module {
 		}
 	}
 	return Module{}
+}
+
+// GetService 获取服务
+func GetService(name string) interface{} {
+	for _, m := range moduleList {
+		if m.Name == name {
+			return m.Service
+		}
+	}
+	return nil
 }
 
 // TaskRouter task路由者
