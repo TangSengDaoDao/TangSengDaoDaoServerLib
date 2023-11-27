@@ -2,6 +2,7 @@ package testutil
 
 import (
 	// "github.com/TangSengDaoDao/TangSengDaoDaoServer/modules/base/event"
+
 	"github.com/TangSengDaoDao/TangSengDaoDaoServerLib/config"
 	"github.com/TangSengDaoDao/TangSengDaoDaoServerLib/module"
 	"github.com/TangSengDaoDao/TangSengDaoDaoServerLib/server"
@@ -29,7 +30,7 @@ func NewTestServer(args ...string) (*server.Server, *config.Context) {
 	cfg.DB.MySQLAddr = "root:demo@tcp(127.0.0.1)/test?charset=utf8mb4&parseTime=true"
 	cfg.DB.Migration = false
 	ctx := config.NewContext(cfg)
-
+	// ctx.Event = event.New(ctx)
 	// 先清空旧数据
 	err := CleanAllTables(ctx)
 	if err != nil {

@@ -432,3 +432,39 @@ type MsgGroupMemberScanJoin struct {
 	Scaner        string `json:"scaner"`         // 扫码者uid
 	ScanerName    string `json:"scaner_name"`    // 扫码者名称
 }
+
+// MsgOrgOrDeptCreateReq 组织或部门创建
+type MsgOrgOrDeptCreateReq struct {
+	GroupNo       string `json:"group_no"`       // 组织或部门ID
+	GroupCategory string `json:"group_category"` // 群分类
+	Name          string `json:"name"`           // 组织或部门名称
+	Operator      string `json:"operator"`       // 操作者uid
+	OperatorName  string `json:"operator_name"`  // 操作者名称
+}
+
+// OrgOrDeptEmployeeVO 组织或部门成员更新
+type OrgOrDeptEmployeeVO struct {
+	Operator     string `json:"operator"`      // 操作者uid
+	OperatorName string `json:"operator_name"` // 操作者名称
+	EmployeeUid  string `json:"employee_uid"`  // 员工uid
+	EmployeeName string `json:"employee_name"` // 员工名称
+	GroupNo      string `json:"group_no"`      // 组织或部门ID
+	Action       string `json:"action"`        // 操作类型 'add'｜'delete'
+}
+
+type MsgOrgOrDeptEmployeeUpdateReq struct {
+	Members []*OrgOrDeptEmployeeVO `json:"members"`
+}
+
+// MsgOrgOrDeptEmployeeAddReq 组织或部门新增群成员消息
+type MsgOrgOrDeptEmployeeAddReq struct {
+	GroupNo string        `json:"group_no"` // 组织或部门ID
+	Name    string        `json:"name"`     // 组织或部门名称
+	Members []*UserBaseVo `json:"members"`
+}
+
+// OrgEmployeeExitReq 组织内成员退出
+type OrgEmployeeExitReq struct {
+	Operator string   `json:"operator"`  // 操作者uid
+	GroupNos []string `json:"group_nos"` // 退出的群列表
+}
