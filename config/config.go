@@ -191,6 +191,9 @@ type Config struct {
 		StickerAddOff bool // 是否关闭注册添加表情
 		UsernameOn    bool // 是否开启用户名注册
 	}
+	Organization struct {
+		ImportOn bool // 是否开启导入组织信息
+	}
 	// ---------- push ----------
 	Push struct {
 		ContentDetailOn bool     //  推送是否显示正文详情(如果为false，则只显示“您有一条新的消息” 默认为true)
@@ -614,7 +617,8 @@ func (c *Config) ConfigureWithViper(vp *viper.Viper) {
 	c.Register.OnlyChina = c.getBool("register.onlyChina", c.Register.OnlyChina)
 	c.Register.StickerAddOff = c.getBool("register.stickerAddOff", c.Register.StickerAddOff)
 	c.Register.UsernameOn = c.getBool("register.usernameOn", c.Register.UsernameOn)
-
+	//#################### organization ####################
+	c.Organization.ImportOn = c.getBool("organization.importOn", c.Organization.ImportOn)
 	//#################### push ####################
 	c.Push.ContentDetailOn = c.getBool("push.contentDetailOn", c.Push.ContentDetailOn)
 	c.Push.PushPoolSize = c.getInt64("push.pushPoolSize", c.Push.PushPoolSize)
