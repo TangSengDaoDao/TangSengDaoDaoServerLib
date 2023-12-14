@@ -157,8 +157,10 @@ const (
 	CMDSyncReminders = "syncReminders"
 	// 同步最近会话扩展
 	CMDSyncConversationExtra = "syncConversationExtra"
-	// organizationLogoUpdate 组织logo更新
-	CMDOrganizationLogoUpdate = "organizationLogoUpdate"
+	// 组织信息更新
+	CMDOrganizationInfoUpdate = "organizationInfoUpdate"
+	// 同步选择的组织
+	CMDSyncSelectedOrganization = "syncSelectedOrganization"
 )
 
 // UserDeviceTokenPrefix 用户设备token缓存前缀
