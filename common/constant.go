@@ -159,8 +159,10 @@ const (
 	CMDSyncConversationExtra = "syncConversationExtra"
 	// 组织信息更新
 	CMDOrganizationInfoUpdate = "organizationInfoUpdate"
-	// 同步选择的组织
-	CMDSyncSelectedOrganization = "syncSelectedOrganization"
+	// 退出某个组织
+	CMDQuitOrganization = "quitOrganization"
+	// 加入某个组织
+	CMDJoinOrganization = "joinOrganization"
 )
 
 // UserDeviceTokenPrefix 用户设备token缓存前缀
