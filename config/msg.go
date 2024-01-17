@@ -899,8 +899,8 @@ type ConversationResp struct {
 type ChannelCreateReq struct {
 	ChannelID   string   `json:"channel_id"`   // 频道ID
 	ChannelType uint8    `json:"channel_type"` // 频道类型
-	Ban         int      `json:"ban"`          // 是否被封禁（一般建议500或1000成员以上设置为超大群，超大群，注意：超大群不会维护最近会话数据）
-	Large       int      `json:"large"`        // 是否是超大群（被封后 任何人都不能发消息，包括创建者）
+	Ban         int      `json:"ban"`          // 是否被封禁（被封后 任何人都不能发消息，包括创建者）
+	Large       int      `json:"large"`        // 是否是超大群（一般建议500或1000成员以上设置为超大群，超大群，注意：超大群不会维护最近会话数据）
 	Subscribers []string `json:"subscribers"`  // 订阅者
 }
 
