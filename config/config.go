@@ -755,6 +755,11 @@ func (c *Config) GetCommunityCoverFilePath(communityNo string) string {
 	return fmt.Sprintf("community/%d/%s_cover.png", avatarID, communityNo)
 }
 
+// GetOrganizationLogoFilePath 获取组织logo上传路径
+func (c *Config) GetOrganizationLogoFilePath(orgId string) string {
+	return fmt.Sprintf("organization/logo/%s.png", orgId)
+}
+
 // IsVisitorChannel 是访客频道
 func (c *Config) IsVisitorChannel(uid string) bool {
 
