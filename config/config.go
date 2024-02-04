@@ -650,7 +650,7 @@ func (c *Config) ConfigureWithViper(vp *viper.Viper) {
 	c.Push.OPPO.AppSecret = c.getString("push.oppo.appSecret", c.Push.OPPO.AppSecret)
 	c.Push.OPPO.MasterSecret = c.getString("push.oppo.masterSecret", c.Push.OPPO.MasterSecret)
 	// FIREBASE 推送
-	c.Push.FIREBASE.jsonPath = c.getString("push.firebase.jsonPath", c.Push.FIREBASE.jsonPath)
+	c.Push.FIREBASE.JsonPath = c.getString("push.firebase.jsonPath", c.Push.FIREBASE.JsonPath)
 	c.Push.FIREBASE.PackageName = c.getString("push.firebase.packageName", c.Push.FIREBASE.PackageName)
 	//#################### message ####################
 	c.Message.SendMessageOn = c.getBool("message.sendMessageOn", c.Message.SendMessageOn)
@@ -976,7 +976,7 @@ type VIVOPush struct {
 
 type FIREBASEPush struct {
 	PackageName string
-	jsonPath    string // firebase推送需要的json的路径
+	JsonPath    string // firebase推送需要的json的路径
 }
 
 type duration struct {
