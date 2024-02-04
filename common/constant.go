@@ -202,6 +202,8 @@ const (
 	// DeviceTypeHMS 华为设备
 	DeviceTypeHMS DeviceType = "HMS"
 
+	// DeviceTypeFirebase 海外GOOGLE Firebase推送
+	DeviceTypeFirebase DeviceType = "FIREBASE"
 	// DeviceTypeOPPO oppo设备
 	DeviceTypeOPPO DeviceType = "OPPO"
 
