@@ -157,8 +157,12 @@ const (
 	CMDSyncReminders = "syncReminders"
 	// 同步最近会话扩展
 	CMDSyncConversationExtra = "syncConversationExtra"
-	// organizationLogoUpdate 组织logo更新
-	CMDOrganizationLogoUpdate = "organizationLogoUpdate"
+	// 组织信息更新
+	CMDOrganizationInfoUpdate = "organizationInfoUpdate"
+	// 退出某个组织
+	CMDQuitOrganization = "quitOrganization"
+	// 加入某个组织
+	CMDJoinOrganization = "joinOrganization"
 )
 
 // UserDeviceTokenPrefix 用户设备token缓存前缀
@@ -198,6 +202,8 @@ const (
 	// DeviceTypeHMS 华为设备
 	DeviceTypeHMS DeviceType = "HMS"
 
+	// DeviceTypeFirebase 海外GOOGLE Firebase推送
+	DeviceTypeFirebase DeviceType = "FIREBASE"
 	// DeviceTypeOPPO oppo设备
 	DeviceTypeOPPO DeviceType = "OPPO"
 

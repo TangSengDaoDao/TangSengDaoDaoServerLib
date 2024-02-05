@@ -435,11 +435,12 @@ type MsgGroupMemberScanJoin struct {
 
 // MsgOrgOrDeptCreateReq 组织或部门创建
 type MsgOrgOrDeptCreateReq struct {
-	GroupNo       string `json:"group_no"`       // 组织或部门ID
-	GroupCategory string `json:"group_category"` // 群分类
-	Name          string `json:"name"`           // 组织或部门名称
-	Operator      string `json:"operator"`       // 操作者uid
-	OperatorName  string `json:"operator_name"`  // 操作者名称
+	GroupNo       string                 `json:"group_no"`       // 组织或部门ID
+	GroupCategory string                 `json:"group_category"` // 群分类
+	Name          string                 `json:"name"`           // 组织或部门名称
+	Operator      string                 `json:"operator"`       // 操作者uid
+	OperatorName  string                 `json:"operator_name"`  // 操作者名称
+	Members       []*OrgOrDeptEmployeeVO `json:"members"`        // 成员
 }
 
 // OrgOrDeptEmployeeVO 组织或部门成员更新

@@ -191,15 +191,19 @@ type Config struct {
 		StickerAddOff bool // 是否关闭注册添加表情
 		UsernameOn    bool // 是否开启用户名注册
 	}
+	Organization struct {
+		ImportOn bool // 是否开启导入组织信息
+	}
 	// ---------- push ----------
 	Push struct {
-		ContentDetailOn bool     //  推送是否显示正文详情(如果为false，则只显示“您有一条新的消息” 默认为true)
-		PushPoolSize    int64    // 推送任务池大小
-		APNS            APNSPush // 苹果推送
-		MI              MIPush   // 小米推送
-		HMS             HMSPush  // 华为推送
-		VIVO            VIVOPush // vivo推送
-		OPPO            OPPOPush // oppo推送
+		ContentDetailOn bool         //  推送是否显示正文详情(如果为false，则只显示“您有一条新的消息” 默认为true)
+		PushPoolSize    int64        // 推送任务池大小
+		APNS            APNSPush     // 苹果推送
+		MI              MIPush       // 小米推送
+		HMS             HMSPush      // 华为推送
+		VIVO            VIVOPush     // vivo推送
+		OPPO            OPPOPush     // oppo推送
+		FIREBASE        FIREBASEPush // FIREBASE推送
 	}
 	// ---------- message ----------
 	Message struct {
@@ -412,6 +416,7 @@ func New() *Config {
 			HMS             HMSPush
 			VIVO            VIVOPush
 			OPPO            OPPOPush
+			FIREBASE        FIREBASEPush
 		}{
 			ContentDetailOn: true,
 			PushPoolSize:    100,
@@ -614,7 +619,8 @@ func (c *Config) ConfigureWithViper(vp *viper.Viper) {
 	c.Register.OnlyChina = c.getBool("register.onlyChina", c.Register.OnlyChina)
 	c.Register.StickerAddOff = c.getBool("register.stickerAddOff", c.Register.StickerAddOff)
 	c.Register.UsernameOn = c.getBool("register.usernameOn", c.Register.UsernameOn)
-
+	//#################### organization ####################
+	c.Organization.ImportOn = c.getBool("organization.importOn", c.Organization.ImportOn)
 	//#################### push ####################
 	c.Push.ContentDetailOn = c.getBool("push.contentDetailOn", c.Push.ContentDetailOn)
 	c.Push.PushPoolSize = c.getInt64("push.pushPoolSize", c.Push.PushPoolSize)
@@ -643,7 +649,10 @@ func (c *Config) ConfigureWithViper(vp *viper.Viper) {
 	c.Push.OPPO.AppKey = c.getString("push.oppo.appKey", c.Push.OPPO.AppKey)
 	c.Push.OPPO.AppSecret = c.getString("push.oppo.appSecret", c.Push.OPPO.AppSecret)
 	c.Push.OPPO.MasterSecret = c.getString("push.oppo.masterSecret", c.Push.OPPO.MasterSecret)
-
+	// FIREBASE 推送
+	c.Push.FIREBASE.JsonPath = c.getString("push.firebase.jsonPath", c.Push.FIREBASE.JsonPath)
+	c.Push.FIREBASE.ProjectId = c.getString("push.firebase.projectId", c.Push.FIREBASE.ProjectId)
+	c.Push.FIREBASE.PackageName = c.getString("push.firebase.packageName", c.Push.FIREBASE.PackageName)
 	//#################### message ####################
 	c.Message.SendMessageOn = c.getBool("message.sendMessageOn", c.Message.SendMessageOn)
 
@@ -749,6 +758,11 @@ func (c *Config) GetCommunityAvatarFilePath(communityNo string) string {
 func (c *Config) GetCommunityCoverFilePath(communityNo string) string {
 	avatarID := crc32.ChecksumIEEE([]byte(communityNo)) % uint32(c.Avatar.Partition)
 	return fmt.Sprintf("community/%d/%s_cover.png", avatarID, communityNo)
+}
+
+// GetOrganizationLogoFilePath 获取组织logo上传路径
+func (c *Config) GetOrganizationLogoFilePath(orgId string) string {
+	return fmt.Sprintf("organization/logo/%s.png", orgId)
 }
 
 // IsVisitorChannel 是访客频道
@@ -959,6 +973,12 @@ type VIVOPush struct {
 	AppID       string
 	AppKey      string
 	AppSecret   string
+}
+
+type FIREBASEPush struct {
+	PackageName string
+	JsonPath    string // firebase推送需要的json的路径
+	ProjectId   string // serviceAccountJson中的project_id值
 }
 
 type duration struct {

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	limlog "github.com/TangSengDaoDao/TangSengDaoDaoServerLib/pkg/log"
+	imlog "github.com/TangSengDaoDao/TangSengDaoDaoServerLib/pkg/log"
 	"github.com/TangSengDaoDao/TangSengDaoDaoServerLib/pkg/util"
 	"go.uber.org/zap"
 )
@@ -31,16 +31,14 @@ const (
 	Card ContentType = 7
 	// File 文件
 	File ContentType = 8
-	// RedPacket 红包
-	RedPacket ContentType = 9
-	// Transfer 转账
-	Transfer ContentType = 10
 	// MultipleForward 合并转发
 	MultipleForward = 11
 	// VectorSticker 矢量表情
 	VectorSticker ContentType = 12
 	// EmojiSticker 矢量emoji表情
 	EmojiSticker ContentType = 13
+	// InviteJoinOrganization 邀请加入组织
+	InviteJoinOrganization ContentType = 16
 
 	// 消息正文错误
 	ContentError ContentType = 97
@@ -79,13 +77,6 @@ const (
 	GroupMemberQuit ContentType = 1021
 	// 群升级
 	GroupUpgrade ContentType = 1022
-
-	// ---------- 红包类 ----------
-
-	// RedpacketReceive 红包领取
-	RedpacketReceive ContentType = 1011
-	// TradeSystemNotifyTemplate  交易系统通知（比如：转账退回，红包退回）
-	TradeSystemNotifyTemplate ContentType = 1012
 
 	// ---------- 客服类 ----------
 	HotlineAssignTo ContentType = 1200 // 分配客服
@@ -140,7 +131,7 @@ func GetFakeChannelIDWith(fromUID, toUID string) string {
 		return fmt.Sprintf("%s@%s", fromUID, toUID)
 	}
 	if fromUIDHash == toUIDHash {
-		limlog.Warn("生成的fromUID的Hash和toUID的Hash是相同的！！", zap.Uint32("fromUIDHash", fromUIDHash), zap.Uint32("toUIDHash", toUIDHash), zap.String("fromUID", fromUID), zap.String("toUID", toUID))
+		imlog.Warn("生成的fromUID的Hash和toUID的Hash是相同的！！", zap.Uint32("fromUIDHash", fromUIDHash), zap.Uint32("toUIDHash", toUIDHash), zap.String("fromUID", fromUID), zap.String("toUID", toUID))
 	}
 
 	return fmt.Sprintf("%s@%s", toUID, fromUID)
