@@ -196,13 +196,14 @@ type Config struct {
 	}
 	// ---------- push ----------
 	Push struct {
-		ContentDetailOn bool     //  推送是否显示正文详情(如果为false，则只显示“您有一条新的消息” 默认为true)
-		PushPoolSize    int64    // 推送任务池大小
-		APNS            APNSPush // 苹果推送
-		MI              MIPush   // 小米推送
-		HMS             HMSPush  // 华为推送
-		VIVO            VIVOPush // vivo推送
-		OPPO            OPPOPush // oppo推送
+		ContentDetailOn bool         //  推送是否显示正文详情(如果为false，则只显示“您有一条新的消息” 默认为true)
+		PushPoolSize    int64        // 推送任务池大小
+		APNS            APNSPush     // 苹果推送
+		MI              MIPush       // 小米推送
+		HMS             HMSPush      // 华为推送
+		VIVO            VIVOPush     // vivo推送
+		OPPO            OPPOPush     // oppo推送
+		FIREBASE        FIREBASEPush // FIREBASE推送
 	}
 	// ---------- message ----------
 	Message struct {
@@ -416,6 +417,7 @@ func New() *Config {
 			HMS             HMSPush
 			VIVO            VIVOPush
 			OPPO            OPPOPush
+			FIREBASE        FIREBASEPush
 		}{
 			ContentDetailOn: true,
 			PushPoolSize:    100,
@@ -648,7 +650,10 @@ func (c *Config) ConfigureWithViper(vp *viper.Viper) {
 	c.Push.OPPO.AppKey = c.getString("push.oppo.appKey", c.Push.OPPO.AppKey)
 	c.Push.OPPO.AppSecret = c.getString("push.oppo.appSecret", c.Push.OPPO.AppSecret)
 	c.Push.OPPO.MasterSecret = c.getString("push.oppo.masterSecret", c.Push.OPPO.MasterSecret)
-
+	// FIREBASE 推送
+	c.Push.FIREBASE.JsonPath = c.getString("push.firebase.jsonPath", c.Push.FIREBASE.JsonPath)
+	c.Push.FIREBASE.ProjectId = c.getString("push.firebase.projectId", c.Push.FIREBASE.ProjectId)
+	c.Push.FIREBASE.PackageName = c.getString("push.firebase.packageName", c.Push.FIREBASE.PackageName)
 	//#################### message ####################
 	c.Message.SendMessageOn = c.getBool("message.sendMessageOn", c.Message.SendMessageOn)
 
@@ -969,6 +974,12 @@ type VIVOPush struct {
 	AppID       string
 	AppKey      string
 	AppSecret   string
+}
+
+type FIREBASEPush struct {
+	PackageName string
+	JsonPath    string // firebase推送需要的json的路径
+	ProjectId   string // serviceAccountJson中的project_id值
 }
 
 type duration struct {
