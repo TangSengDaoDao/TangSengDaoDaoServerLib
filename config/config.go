@@ -355,7 +355,8 @@ func New() *Config {
 			Partition      int
 			DefaultBaseURL string
 		}{
-			Default:        "assets/assets/avatar.png",
+			// Default:        "assets/assets/avatar.png",
+			Default:        "",
 			DefaultCount:   900,
 			Partition:      100,
 			DefaultBaseURL: "",
