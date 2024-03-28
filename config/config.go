@@ -194,6 +194,13 @@ type Config struct {
 	Organization struct {
 		ImportOn bool // 是否开启导入组织信息
 	}
+	// ---------- 消息搜索 ----------
+	ZincSearch struct {
+		SearchOn     bool   // 是否开启消息搜索
+		APIURL       string // ZincSearch 请求地址
+		ZincUsername string // ZincSearch 登录用户名
+		ZincPassword string // ZincSearch 登录密码
+	}
 	// ---------- push ----------
 	Push struct {
 		ContentDetailOn bool         //  推送是否显示正文详情(如果为false，则只显示“您有一条新的消息” 默认为true)
@@ -622,6 +629,11 @@ func (c *Config) ConfigureWithViper(vp *viper.Viper) {
 	c.Register.UsernameOn = c.getBool("register.usernameOn", c.Register.UsernameOn)
 	//#################### organization ####################
 	c.Organization.ImportOn = c.getBool("organization.importOn", c.Organization.ImportOn)
+	//#################### ZincSearch ####################
+	c.ZincSearch.SearchOn = c.getBool("zincSearch.searchOn", c.ZincSearch.SearchOn)
+	c.ZincSearch.APIURL = c.getString("zincSearch.apiURL", c.ZincSearch.APIURL)
+	c.ZincSearch.ZincUsername = c.getString("zincSearch.username", c.ZincSearch.ZincUsername)
+	c.ZincSearch.ZincPassword = c.getString("zincSearch.password", c.ZincSearch.ZincPassword)
 	//#################### push ####################
 	c.Push.ContentDetailOn = c.getBool("push.contentDetailOn", c.Push.ContentDetailOn)
 	c.Push.PushPoolSize = c.getInt64("push.pushPoolSize", c.Push.PushPoolSize)
