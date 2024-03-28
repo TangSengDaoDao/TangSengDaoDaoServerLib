@@ -196,10 +196,11 @@ type Config struct {
 	}
 	// ---------- 消息搜索 ----------
 	ZincSearch struct {
-		SearchOn     bool   // 是否开启消息搜索
-		APIURL       string // ZincSearch 请求地址
-		ZincUsername string // ZincSearch 登录用户名
-		ZincPassword string // ZincSearch 登录密码
+		SearchOn           bool   // 是否开启消息搜索
+		APIURL             string // ZincSearch 请求地址
+		ZincUsername       string // ZincSearch 登录用户名
+		ZincPassword       string // ZincSearch 登录密码
+		SyncIntervalSecond int    // 同步消息间隔时间（单位秒）
 	}
 	// ---------- push ----------
 	Push struct {
@@ -634,6 +635,7 @@ func (c *Config) ConfigureWithViper(vp *viper.Viper) {
 	c.ZincSearch.APIURL = c.getString("zincSearch.apiURL", c.ZincSearch.APIURL)
 	c.ZincSearch.ZincUsername = c.getString("zincSearch.username", c.ZincSearch.ZincUsername)
 	c.ZincSearch.ZincPassword = c.getString("zincSearch.password", c.ZincSearch.ZincPassword)
+	c.ZincSearch.SyncIntervalSecond = c.getInt("zincSearch.syncIntervalSecond", c.ZincSearch.SyncIntervalSecond)
 	//#################### push ####################
 	c.Push.ContentDetailOn = c.getBool("push.contentDetailOn", c.Push.ContentDetailOn)
 	c.Push.PushPoolSize = c.getInt64("push.pushPoolSize", c.Push.PushPoolSize)
