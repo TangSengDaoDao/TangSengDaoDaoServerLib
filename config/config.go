@@ -201,6 +201,7 @@ type Config struct {
 		ZincUsername       string // ZincSearch 登录用户名
 		ZincPassword       string // ZincSearch 登录密码
 		SyncIntervalSecond int    // 同步消息间隔时间（单位秒）
+		SyncCount          int    // 每张表每次同步数量 默认100条
 	}
 	// ---------- push ----------
 	Push struct {
@@ -636,6 +637,7 @@ func (c *Config) ConfigureWithViper(vp *viper.Viper) {
 	c.ZincSearch.ZincUsername = c.getString("zincSearch.username", c.ZincSearch.ZincUsername)
 	c.ZincSearch.ZincPassword = c.getString("zincSearch.password", c.ZincSearch.ZincPassword)
 	c.ZincSearch.SyncIntervalSecond = c.getInt("zincSearch.syncIntervalSecond", c.ZincSearch.SyncIntervalSecond)
+	c.ZincSearch.SyncCount = c.getInt("zincSearch.syncCount", c.ZincSearch.SyncCount)
 	//#################### push ####################
 	c.Push.ContentDetailOn = c.getBool("push.contentDetailOn", c.Push.ContentDetailOn)
 	c.Push.PushPoolSize = c.getInt64("push.pushPoolSize", c.Push.PushPoolSize)
