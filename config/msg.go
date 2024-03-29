@@ -951,3 +951,9 @@ type SubscriberRemoveReq struct {
 	ChannelType uint8    `json:"channel_type"`
 	Subscribers []string `json:"subscribers"`
 }
+
+// UpdateSearchMessageReq 修改搜索消息
+type UpdateSearchMessageReq struct {
+	ChannelID  string   `json:"channel_id"`
+	MessageIDs []string `json:"message_ids"`
+}
