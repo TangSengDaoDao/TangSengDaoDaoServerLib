@@ -216,7 +216,8 @@ type Config struct {
 	}
 	// ---------- message ----------
 	Message struct {
-		SendMessageOn bool // 是否开启接口发送发送消息
+		SendMessageOn                 bool // 是否开启接口发送发送消息
+		SyncReadedCountIntervalSecond int  // 同步消息已读数量间隔时间（单位秒）
 	}
 	// ---------- wechat ----------
 	Wechat struct {
@@ -672,7 +673,7 @@ func (c *Config) ConfigureWithViper(vp *viper.Viper) {
 	c.Push.FIREBASE.PackageName = c.getString("push.firebase.packageName", c.Push.FIREBASE.PackageName)
 	//#################### message ####################
 	c.Message.SendMessageOn = c.getBool("message.sendMessageOn", c.Message.SendMessageOn)
-
+	c.Message.SyncReadedCountIntervalSecond = c.getInt("message.syncReadedCountIntervalSecond", c.Message.SyncReadedCountIntervalSecond)
 	//#################### weixin ####################
 	c.Wechat.AppID = c.getString("wechat.appID", c.Wechat.AppID)
 	c.Wechat.AppSecret = c.getString("wechat.appSecret", c.Wechat.AppSecret)
