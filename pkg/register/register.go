@@ -84,6 +84,10 @@ type IMDatasource struct {
 type BussDataSource struct {
 	// 获取频道详情
 	ChannelGet func(channelID string, channelType uint8, loginUID string) (*model.ChannelResp, error)
+	// 是否显示用户短号
+	IsShowShortNo func(groupNO string, uid string, loginUID string) (bool, error)
+	// 邀请码是否存在
+	RegisterInviteCodeIsExist func(inviteCode string) (bool, error)
 }
 
 // 模块

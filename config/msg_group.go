@@ -433,6 +433,13 @@ type MsgGroupMemberScanJoin struct {
 	ScanerName    string `json:"scaner_name"`    // 扫码者名称
 }
 
+// MsgGroupDisband 群解散
+type MsgGroupDisband struct {
+	GroupNo      string `json:"group_no"`      // 群编号
+	Operator     string `json:"operator"`      // 操作者uid
+	OperatorName string `json:"operator_name"` // 操作者名称
+}
+
 // MsgOrgOrDeptCreateReq 组织或部门创建
 type MsgOrgOrDeptCreateReq struct {
 	GroupNo       string                 `json:"group_no"`       // 组织或部门ID
