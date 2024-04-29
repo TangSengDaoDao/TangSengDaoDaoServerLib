@@ -468,6 +468,15 @@ func (c *Context) IMRevokeMessage(req *MessageRevokeReq) error {
 	return c.handlerIMError(resp)
 }
 
+// IMDelChannel 删除频道
+func (c *Context) IMDelChannel(req *ChannelDeleteReq) error {
+	resp, err := network.Post(c.cfg.WuKongIM.APIURL+"/channel/delete", []byte(util.ToJson(req)), nil)
+	if err != nil {
+		return err
+	}
+	return c.handlerIMError(resp)
+}
+
 // SendRevoke 发送撤回消息
 func (c *Context) SendRevoke(req *MsgRevokeReq) error {
 
@@ -652,6 +661,12 @@ type MessageRevokeReq struct {
 	ChannelID   string   `json:"channel_id"`   // 频道ID
 	ChannelType uint8    `json:"channel_type"` // 频道类型
 	MessageIDs  []uint64 `json:"message_ids"`  // 指定需要撤回的消息
+}
+
+// ChannelDeleteReq 删除频道请求
+type ChannelDeleteReq struct {
+	ChannelID   string `json:"channel_id"`   // 频道ID
+	ChannelType uint8  `json:"channel_type"` // 频道类型
 }
 
 // MsgRevokeReq 撤回消息请求
