@@ -113,6 +113,8 @@ const (
 	GroupAttrKeyStatus = "status"
 	// GroupAllowViewHistoryMsg 是否允许新成员查看历史消息
 	GroupAllowViewHistoryMsg = "allow_view_history_msg"
+	// GroupAllowMemberPinnedMessage 是否允许成员置顶消息
+	GroupAllowMemberPinnedMessage = "allow_member_pinned_message"
 )
 
 // 命令消息
