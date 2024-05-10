@@ -163,6 +163,8 @@ const (
 	CMDQuitOrganization = "quitOrganization"
 	// 加入某个组织
 	CMDJoinOrganization = "joinOrganization"
+	// 同步置顶消息
+	CMDSyncPinnedMessage = "syncPinnedMessage"
 )
 
 // UserDeviceTokenPrefix 用户设备token缓存前缀
