@@ -399,6 +399,27 @@ func (c *Context) IMSyncUserConversation(uid string, version int64, msgCount int
 // 	return c.handlerIMError(resp)
 
 // }
+func (c *Context) IMGetWithChannelAndSeqs(channelID string, channelType uint8, seqs []uint32) (*SyncChannelMessageResp, error) {
+	var req = map[string]interface{}{
+		"channel_id":   channelID,
+		"channel_type": channelType,
+		"message_seqs": seqs,
+	}
+	resp, err := network.Post(c.cfg.WuKongIM.APIURL+"/messages", []byte(util.ToJson(req)), nil)
+	if err != nil {
+		return nil, err
+	}
+	err = c.handlerIMError(resp)
+	if err != nil {
+		return nil, err
+	}
+	var syncChannelMessageResp *SyncChannelMessageResp
+	err = util.ReadJsonByByte([]byte(resp.Body), &syncChannelMessageResp)
+	if err != nil {
+		return nil, err
+	}
+	return syncChannelMessageResp, nil
+}
 
 // IMSyncChannelMessage 同步频道消息
 func (c *Context) IMSyncChannelMessage(req SyncChannelMessageReq) (*SyncChannelMessageResp, error) {
