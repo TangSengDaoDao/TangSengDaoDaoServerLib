@@ -399,11 +399,12 @@ func (c *Context) IMSyncUserConversation(uid string, version int64, msgCount int
 // 	return c.handlerIMError(resp)
 
 // }
-func (c *Context) IMGetWithChannelAndSeqs(channelID string, channelType uint8, seqs []uint32) (*SyncChannelMessageResp, error) {
+func (c *Context) IMGetWithChannelAndSeqs(channelID string, channelType uint8, loginUID string, seqs []uint32) (*SyncChannelMessageResp, error) {
 	var req = map[string]interface{}{
 		"channel_id":   channelID,
 		"channel_type": channelType,
 		"message_seqs": seqs,
+		"login_uid":    loginUID,
 	}
 	resp, err := network.Post(c.cfg.WuKongIM.APIURL+"/messages", []byte(util.ToJson(req)), nil)
 	if err != nil {
