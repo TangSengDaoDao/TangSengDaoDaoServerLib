@@ -167,6 +167,8 @@ const (
 	CMDJoinOrganization = "joinOrganization"
 	// 同步置顶消息
 	CMDSyncPinnedMessage = "syncPinnedMessage"
+	// 清空频道消息
+	CMDClearChannelMesage = "clearChannelMessage"
 )
 
 // UserDeviceTokenPrefix 用户设备token缓存前缀
