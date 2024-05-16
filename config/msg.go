@@ -38,8 +38,8 @@ const (
 )
 
 type Channel struct {
-	ChannelID   string
-	ChannelType uint8
+	ChannelID   string `json:"channel_id"`   // 频道ID
+	ChannelType uint8  `json:"channel_type"` // 频道类型
 }
 
 func (d DeviceFlag) Uint8() uint8 {
