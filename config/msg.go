@@ -399,6 +399,29 @@ func (c *Context) IMSyncUserConversation(uid string, version int64, msgCount int
 // 	return c.handlerIMError(resp)
 
 // }
+
+// IMGetChannelMaxSeq
+func (c *Context) IMGetChannelMaxSeq(channelID string, channelType uint8) (*ChannelMaxSeqResp, error) {
+	resp, err := network.Get(c.cfg.WuKongIM.APIURL+"/channel/max_message_seq", map[string]string{
+		"channel_id":   channelID,
+		"channel_type": fmt.Sprintf("%d", channelType),
+	}, nil)
+	if err != nil {
+		return nil, err
+	}
+	err = c.handlerIMError(resp)
+	if err != nil {
+		return nil, err
+	}
+	var ChannelMaxSeqResp *ChannelMaxSeqResp
+	err = util.ReadJsonByByte([]byte(resp.Body), &ChannelMaxSeqResp)
+	if err != nil {
+		return nil, err
+	}
+	return ChannelMaxSeqResp, nil
+}
+
+// IMGetWithChannelAndSeqs
 func (c *Context) IMGetWithChannelAndSeqs(channelID string, channelType uint8, loginUID string, seqs []uint32) (*SyncChannelMessageResp, error) {
 	var req = map[string]interface{}{
 		"channel_id":   channelID,
@@ -607,6 +630,11 @@ type SyncChannelMessageResp struct {
 	EndMessageSeq   uint32         `json:"end_message_seq"`   // 结束序列号
 	PullMode        PullMode       `json:"pull_mode"`         // 拉取模式
 	Messages        []*MessageResp `json:"messages"`          // 消息数据
+}
+
+// ChannelMaxSeqResp 频道最大序列号返回
+type ChannelMaxSeqResp struct {
+	MessageSeq uint32 `json:"message_seq"` // 最大序列号
 }
 
 // ClearConversationUnreadReq 清除用户某个频道未读数请求
