@@ -345,7 +345,7 @@ func (c *Context) SendGroupMemberInviteReq(req MsgGroupMemberInviteReq) error {
 }
 
 // 发送某个用户退出群聊的消息
-func (c *Context) SendGroupExit(groupNo string, uid string, name string) error {
+func (c *Context) SendGroupExit(groupNo string, uid string, name string, visibleUids []string) error {
 	// 发送群成员退出群聊消息
 	err := c.SendMessage(&MsgSendReq{
 		Header: MsgHeader{
@@ -362,6 +362,7 @@ func (c *Context) SendGroupExit(groupNo string, uid string, name string) error {
 					Name: name,
 				},
 			},
+			"visibles": visibleUids,
 		})),
 	})
 
