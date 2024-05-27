@@ -205,7 +205,8 @@ type Config struct {
 	}
 	// ---------- 群 ----------
 	Group struct {
-		SameDayCreateMaxCount int // 同一天创建群的最大数量
+		SameDayCreateMaxCount     int  // 同一天创建群的最大数量
+		CreateGroupVerifyFriendOn bool // 建群是否开启好友验证
 	}
 	// ---------- push ----------
 	Push struct {
@@ -424,9 +425,11 @@ func New() *Config {
 		},
 		// ---------- 群设置  ----------
 		Group: struct {
-			SameDayCreateMaxCount int
+			SameDayCreateMaxCount     int
+			CreateGroupVerifyFriendOn bool
 		}{
-			SameDayCreateMaxCount: 10,
+			SameDayCreateMaxCount:     10,
+			CreateGroupVerifyFriendOn: true,
 		},
 		// ---------- push  ----------
 		Push: struct {
@@ -651,6 +654,7 @@ func (c *Config) ConfigureWithViper(vp *viper.Viper) {
 	c.ZincSearch.SyncCount = c.getInt("zincSearch.syncCount", c.ZincSearch.SyncCount)
 	//#################### 群 #################
 	c.Group.SameDayCreateMaxCount = c.getInt("group.sameDayCreateMaxCount", c.Group.SameDayCreateMaxCount)
+	c.Group.CreateGroupVerifyFriendOn = c.getBool("group.createGroupVerifyFriendOn", c.Group.CreateGroupVerifyFriendOn)
 	//#################### push ####################
 	c.Push.ContentDetailOn = c.getBool("push.contentDetailOn", c.Push.ContentDetailOn)
 	c.Push.PushPoolSize = c.getInt64("push.pushPoolSize", c.Push.PushPoolSize)
