@@ -203,6 +203,10 @@ type Config struct {
 		SyncIntervalSecond int    // 同步消息间隔时间（单位秒）
 		SyncCount          int    // 每张表每次同步数量 默认100条
 	}
+	// ---------- 群 ----------
+	Group struct {
+		SameDayCreateMaxCount int // 同一天创建群的最大数量
+	}
 	// ---------- push ----------
 	Push struct {
 		ContentDetailOn bool         //  推送是否显示正文详情(如果为false，则只显示“您有一条新的消息” 默认为true)
@@ -417,6 +421,12 @@ func New() *Config {
 			RoomMaxCount int
 		}{
 			RoomMaxCount: 9,
+		},
+		// ---------- 群设置  ----------
+		Group: struct {
+			SameDayCreateMaxCount int
+		}{
+			SameDayCreateMaxCount: 10,
 		},
 		// ---------- push  ----------
 		Push: struct {
@@ -639,6 +649,8 @@ func (c *Config) ConfigureWithViper(vp *viper.Viper) {
 	c.ZincSearch.ZincPassword = c.getString("zincSearch.password", c.ZincSearch.ZincPassword)
 	c.ZincSearch.SyncIntervalSecond = c.getInt("zincSearch.syncIntervalSecond", c.ZincSearch.SyncIntervalSecond)
 	c.ZincSearch.SyncCount = c.getInt("zincSearch.syncCount", c.ZincSearch.SyncCount)
+	//#################### 群 #################
+	c.Group.SameDayCreateMaxCount = c.getInt("group.sameDayCreateMaxCount", c.Group.SameDayCreateMaxCount)
 	//#################### push ####################
 	c.Push.ContentDetailOn = c.getBool("push.contentDetailOn", c.Push.ContentDetailOn)
 	c.Push.PushPoolSize = c.getInt64("push.pushPoolSize", c.Push.PushPoolSize)
