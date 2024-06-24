@@ -253,8 +253,10 @@ const (
 	QRCode VercodeType = 3
 	// Friend 好友
 	Friend VercodeType = 4
-	// 手机联系人
+	// MailList 手机联系人
 	MailList VercodeType = 5
+	// InvitationCode 邀请码
+	InvitationCode VercodeType = 6
 )
 
 // QRCodeModel QRCodeModel
