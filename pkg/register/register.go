@@ -87,7 +87,7 @@ type BussDataSource struct {
 	// 是否显示用户短号
 	IsShowShortNo func(groupNO string, uid string, loginUID string) (bool, string, error)
 	// 邀请码是否存在
-	RegisterInviteCodeIsExist func(inviteCode string) (bool, error)
+	GetInviteCode func(inviteCode string) (*model.Invite, error)
 	// 获取用户所有好友
 	GetFriends func(uid string) ([]*model.FriendResp, error)
 }
