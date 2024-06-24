@@ -194,6 +194,10 @@ type Config struct {
 	Organization struct {
 		ImportOn bool // 是否开启导入组织信息
 	}
+	// ---------- 好友 ----------
+	Friend struct {
+		AddedTipsText string // 成为好友系统提示消息
+	}
 	// ---------- 消息搜索 ----------
 	ZincSearch struct {
 		SearchOn           bool   // 是否开启消息搜索
@@ -423,6 +427,13 @@ func New() *Config {
 		}{
 			RoomMaxCount: 9,
 		},
+		// ---------- 好友设置  --------
+
+		Friend: struct {
+			AddedTipsText string
+		}{
+			AddedTipsText: "我们已经是好友了，可以愉快的聊天了！",
+		},
 		// ---------- 群设置  ----------
 		Group: struct {
 			SameDayCreateMaxCount     int
@@ -645,6 +656,8 @@ func (c *Config) ConfigureWithViper(vp *viper.Viper) {
 	c.Register.UsernameOn = c.getBool("register.usernameOn", c.Register.UsernameOn)
 	//#################### organization ####################
 	c.Organization.ImportOn = c.getBool("organization.importOn", c.Organization.ImportOn)
+	//#################### 好友 ###############
+	c.Friend.AddedTipsText = c.getString("friend.addedTipsText", c.Friend.AddedTipsText)
 	//#################### ZincSearch ####################
 	c.ZincSearch.SearchOn = c.getBool("zincSearch.searchOn", c.ZincSearch.SearchOn)
 	c.ZincSearch.APIURL = c.getString("zincSearch.apiURL", c.ZincSearch.APIURL)
