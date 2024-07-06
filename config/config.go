@@ -36,6 +36,8 @@ const (
 	FileServiceSeaweedFS FileService = "seaweedFS"
 	// FileServiceMinio minio
 	FileServiceMinio FileService = "minio"
+	// FileServiceQiniu 七牛云上传服务
+	FileServiceQiniu FileService = "qiniu"
 )
 
 func (u FileService) String() string {
@@ -133,6 +135,7 @@ type Config struct {
 	OSS         OSSConfig     // 阿里云oss配置
 	Minio       MinioConfig   // minio配置
 	Seaweed     SeaweedConfig // seaweedfs配置
+	Qiniu       QiniuConfig   // 七牛云配置
 
 	// ---------- 短信运营商 ----------
 	SMSCode                string // 模拟的短信验证码
@@ -594,6 +597,11 @@ func (c *Config) ConfigureWithViper(vp *viper.Viper) {
 	c.Minio.SecretAccessKey = c.getString("minio.secretAccessKey", c.Minio.SecretAccessKey)
 	// seaweedfs
 	c.Seaweed.URL = c.getString("seaweed.url", c.Seaweed.URL)
+	// qiniu 七牛云
+	c.Qiniu.URL = c.getString("qiniu.url", c.Qiniu.URL)
+	c.Qiniu.BucketName = c.getString("qiniu.bucketName", c.Qiniu.BucketName)
+	c.Qiniu.AccessKey = c.getString("qiniu.accessKey", c.Qiniu.AccessKey)
+	c.Qiniu.SecretKey = c.getString("qiniu.secretKey", c.Qiniu.SecretKey)
 
 	//#################### 短信服务 ####################
 	c.SMSCode = c.getString("smsCode", c.SMSCode)
@@ -966,6 +974,13 @@ type MinioConfig struct {
 
 type SeaweedConfig struct {
 	URL string // 文件下载上传基地址
+}
+
+type QiniuConfig struct {
+	URL        string
+	BucketName string
+	AccessKey  string
+	SecretKey  string
 }
 
 // UnismsConfig unisms短信
