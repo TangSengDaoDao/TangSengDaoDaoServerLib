@@ -90,6 +90,8 @@ type BussDataSource struct {
 	GetInviteCode func(inviteCode string) (*model.Invite, error)
 	// 获取用户所有好友
 	GetFriends func(uid string) ([]*model.FriendResp, error)
+	// 获取群成员资料
+	GetGroupMember func(groupNO string, uid string) (*model.GroupMemberResp, error)
 }
 
 // 模块
