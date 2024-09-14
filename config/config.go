@@ -36,6 +36,8 @@ const (
 	FileServiceSeaweedFS FileService = "seaweedFS"
 	// FileServiceMinio minio
 	FileServiceMinio FileService = "minio"
+	// FileServiceQiniu 七牛云上传服务
+	FileServiceQiniu FileService = "qiniu"
 )
 
 func (u FileService) String() string {
@@ -133,6 +135,7 @@ type Config struct {
 	OSS         OSSConfig     // 阿里云oss配置
 	Minio       MinioConfig   // minio配置
 	Seaweed     SeaweedConfig // seaweedfs配置
+	Qiniu       QiniuConfig   // 七牛云配置
 
 	// ---------- 短信运营商 ----------
 	SMSCode                string // 模拟的短信验证码
@@ -194,6 +197,24 @@ type Config struct {
 	Organization struct {
 		ImportOn bool // 是否开启导入组织信息
 	}
+	// ---------- 好友 ----------
+	Friend struct {
+		AddedTipsText string // 成为好友系统提示消息
+	}
+	// ---------- 消息搜索 ----------
+	ZincSearch struct {
+		SearchOn           bool   // 是否开启消息搜索
+		APIURL             string // ZincSearch 请求地址
+		ZincUsername       string // ZincSearch 登录用户名
+		ZincPassword       string // ZincSearch 登录密码
+		SyncIntervalSecond int    // 同步消息间隔时间（单位秒）
+		SyncCount          int    // 每张表每次同步数量 默认100条
+	}
+	// ---------- 群 ----------
+	Group struct {
+		SameDayCreateMaxCount     int  // 同一天创建群的最大数量
+		CreateGroupVerifyFriendOn bool // 建群是否开启好友验证
+	}
 	// ---------- push ----------
 	Push struct {
 		ContentDetailOn bool         //  推送是否显示正文详情(如果为false，则只显示“您有一条新的消息” 默认为true)
@@ -207,7 +228,8 @@ type Config struct {
 	}
 	// ---------- message ----------
 	Message struct {
-		SendMessageOn bool // 是否开启接口发送发送消息
+		SendMessageOn                 bool // 是否开启接口发送发送消息
+		SyncReadedCountIntervalSecond int  // 同步消息已读数量间隔时间（单位秒）
 	}
 	// ---------- wechat ----------
 	Wechat struct {
@@ -355,7 +377,8 @@ func New() *Config {
 			Partition      int
 			DefaultBaseURL string
 		}{
-			Default:        "assets/assets/avatar.png",
+			// Default:        "assets/assets/avatar.png",
+			Default:        "",
 			DefaultCount:   900,
 			Partition:      100,
 			DefaultBaseURL: "",
@@ -406,6 +429,21 @@ func New() *Config {
 			RoomMaxCount int
 		}{
 			RoomMaxCount: 9,
+		},
+		// ---------- 好友设置  --------
+
+		Friend: struct {
+			AddedTipsText string
+		}{
+			AddedTipsText: "我们已经是好友了，可以愉快的聊天了！",
+		},
+		// ---------- 群设置  ----------
+		Group: struct {
+			SameDayCreateMaxCount     int
+			CreateGroupVerifyFriendOn bool
+		}{
+			SameDayCreateMaxCount:     10,
+			CreateGroupVerifyFriendOn: true,
 		},
 		// ---------- push  ----------
 		Push: struct {
@@ -559,6 +597,11 @@ func (c *Config) ConfigureWithViper(vp *viper.Viper) {
 	c.Minio.SecretAccessKey = c.getString("minio.secretAccessKey", c.Minio.SecretAccessKey)
 	// seaweedfs
 	c.Seaweed.URL = c.getString("seaweed.url", c.Seaweed.URL)
+	// qiniu 七牛云
+	c.Qiniu.URL = c.getString("qiniu.url", c.Qiniu.URL)
+	c.Qiniu.BucketName = c.getString("qiniu.bucketName", c.Qiniu.BucketName)
+	c.Qiniu.AccessKey = c.getString("qiniu.accessKey", c.Qiniu.AccessKey)
+	c.Qiniu.SecretKey = c.getString("qiniu.secretKey", c.Qiniu.SecretKey)
 
 	//#################### 短信服务 ####################
 	c.SMSCode = c.getString("smsCode", c.SMSCode)
@@ -621,6 +664,18 @@ func (c *Config) ConfigureWithViper(vp *viper.Viper) {
 	c.Register.UsernameOn = c.getBool("register.usernameOn", c.Register.UsernameOn)
 	//#################### organization ####################
 	c.Organization.ImportOn = c.getBool("organization.importOn", c.Organization.ImportOn)
+	//#################### 好友 ###############
+	c.Friend.AddedTipsText = c.getString("friend.addedTipsText", c.Friend.AddedTipsText)
+	//#################### ZincSearch ####################
+	c.ZincSearch.SearchOn = c.getBool("zincSearch.searchOn", c.ZincSearch.SearchOn)
+	c.ZincSearch.APIURL = c.getString("zincSearch.apiURL", c.ZincSearch.APIURL)
+	c.ZincSearch.ZincUsername = c.getString("zincSearch.username", c.ZincSearch.ZincUsername)
+	c.ZincSearch.ZincPassword = c.getString("zincSearch.password", c.ZincSearch.ZincPassword)
+	c.ZincSearch.SyncIntervalSecond = c.getInt("zincSearch.syncIntervalSecond", c.ZincSearch.SyncIntervalSecond)
+	c.ZincSearch.SyncCount = c.getInt("zincSearch.syncCount", c.ZincSearch.SyncCount)
+	//#################### 群 #################
+	c.Group.SameDayCreateMaxCount = c.getInt("group.sameDayCreateMaxCount", c.Group.SameDayCreateMaxCount)
+	c.Group.CreateGroupVerifyFriendOn = c.getBool("group.createGroupVerifyFriendOn", c.Group.CreateGroupVerifyFriendOn)
 	//#################### push ####################
 	c.Push.ContentDetailOn = c.getBool("push.contentDetailOn", c.Push.ContentDetailOn)
 	c.Push.PushPoolSize = c.getInt64("push.pushPoolSize", c.Push.PushPoolSize)
@@ -655,7 +710,7 @@ func (c *Config) ConfigureWithViper(vp *viper.Viper) {
 	c.Push.FIREBASE.PackageName = c.getString("push.firebase.packageName", c.Push.FIREBASE.PackageName)
 	//#################### message ####################
 	c.Message.SendMessageOn = c.getBool("message.sendMessageOn", c.Message.SendMessageOn)
-
+	c.Message.SyncReadedCountIntervalSecond = c.getInt("message.syncReadedCountIntervalSecond", c.Message.SyncReadedCountIntervalSecond)
 	//#################### weixin ####################
 	c.Wechat.AppID = c.getString("wechat.appID", c.Wechat.AppID)
 	c.Wechat.AppSecret = c.getString("wechat.appSecret", c.Wechat.AppSecret)
@@ -919,6 +974,13 @@ type MinioConfig struct {
 
 type SeaweedConfig struct {
 	URL string // 文件下载上传基地址
+}
+
+type QiniuConfig struct {
+	URL        string
+	BucketName string
+	AccessKey  string
+	SecretKey  string
 }
 
 // UnismsConfig unisms短信

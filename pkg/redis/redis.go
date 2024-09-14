@@ -403,3 +403,8 @@ func (rc *Conn) BRPoplpush(source string, destination string, timeout time.Durat
 func (rc *Conn) LPUSH(key string, values ...interface{}) (int64, error) {
 	return rc.client.LPush(key, values...).Result()
 }
+
+// 获取Redis key数组
+func (rc *Conn) GetKeys(key string) ([]string, error) {
+	return rc.client.Keys(key).Result()
+}

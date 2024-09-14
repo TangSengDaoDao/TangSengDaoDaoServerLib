@@ -38,8 +38,8 @@ const (
 )
 
 type Channel struct {
-	ChannelID   string
-	ChannelType uint8
+	ChannelID   string `json:"channel_id"`   // 频道ID
+	ChannelType uint8  `json:"channel_type"` // 频道类型
 }
 
 func (d DeviceFlag) Uint8() uint8 {
@@ -400,6 +400,51 @@ func (c *Context) IMSyncUserConversation(uid string, version int64, msgCount int
 
 // }
 
+// IMGetChannelMaxSeq
+func (c *Context) IMGetChannelMaxSeq(channelID string, channelType uint8) (*ChannelMaxSeqResp, error) {
+	resp, err := network.Get(c.cfg.WuKongIM.APIURL+"/channel/max_message_seq", map[string]string{
+		"channel_id":   channelID,
+		"channel_type": fmt.Sprintf("%d", channelType),
+	}, nil)
+	if err != nil {
+		return nil, err
+	}
+	err = c.handlerIMError(resp)
+	if err != nil {
+		return nil, err
+	}
+	var ChannelMaxSeqResp *ChannelMaxSeqResp
+	err = util.ReadJsonByByte([]byte(resp.Body), &ChannelMaxSeqResp)
+	if err != nil {
+		return nil, err
+	}
+	return ChannelMaxSeqResp, nil
+}
+
+// IMGetWithChannelAndSeqs
+func (c *Context) IMGetWithChannelAndSeqs(channelID string, channelType uint8, loginUID string, seqs []uint32) (*SyncChannelMessageResp, error) {
+	var req = map[string]interface{}{
+		"channel_id":   channelID,
+		"channel_type": channelType,
+		"message_seqs": seqs,
+		"login_uid":    loginUID,
+	}
+	resp, err := network.Post(c.cfg.WuKongIM.APIURL+"/messages", []byte(util.ToJson(req)), nil)
+	if err != nil {
+		return nil, err
+	}
+	err = c.handlerIMError(resp)
+	if err != nil {
+		return nil, err
+	}
+	var syncChannelMessageResp *SyncChannelMessageResp
+	err = util.ReadJsonByByte([]byte(resp.Body), &syncChannelMessageResp)
+	if err != nil {
+		return nil, err
+	}
+	return syncChannelMessageResp, nil
+}
+
 // IMSyncChannelMessage 同步频道消息
 func (c *Context) IMSyncChannelMessage(req SyncChannelMessageReq) (*SyncChannelMessageResp, error) {
 
@@ -462,6 +507,15 @@ func (c *Context) IMSyncMessageAck(req *SyncackReq) error {
 func (c *Context) IMRevokeMessage(req *MessageRevokeReq) error {
 
 	resp, err := network.Post(c.cfg.WuKongIM.APIURL+"/message/revoke", []byte(util.ToJson(req)), nil)
+	if err != nil {
+		return err
+	}
+	return c.handlerIMError(resp)
+}
+
+// IMDelChannel 删除频道
+func (c *Context) IMDelChannel(req *ChannelDeleteReq) error {
+	resp, err := network.Post(c.cfg.WuKongIM.APIURL+"/channel/delete", []byte(util.ToJson(req)), nil)
 	if err != nil {
 		return err
 	}
@@ -578,6 +632,11 @@ type SyncChannelMessageResp struct {
 	Messages        []*MessageResp `json:"messages"`          // 消息数据
 }
 
+// ChannelMaxSeqResp 频道最大序列号返回
+type ChannelMaxSeqResp struct {
+	MessageSeq uint32 `json:"message_seq"` // 最大序列号
+}
+
 // ClearConversationUnreadReq 清除用户某个频道未读数请求
 type ClearConversationUnreadReq struct {
 	UID         string `json:"uid"`
@@ -652,6 +711,12 @@ type MessageRevokeReq struct {
 	ChannelID   string   `json:"channel_id"`   // 频道ID
 	ChannelType uint8    `json:"channel_type"` // 频道类型
 	MessageIDs  []uint64 `json:"message_ids"`  // 指定需要撤回的消息
+}
+
+// ChannelDeleteReq 删除频道请求
+type ChannelDeleteReq struct {
+	ChannelID   string `json:"channel_id"`   // 频道ID
+	ChannelType uint8  `json:"channel_type"` // 频道类型
 }
 
 // MsgRevokeReq 撤回消息请求
@@ -950,4 +1015,10 @@ type SubscriberRemoveReq struct {
 	ChannelID   string   `json:"channel_id"`
 	ChannelType uint8    `json:"channel_type"`
 	Subscribers []string `json:"subscribers"`
+}
+
+// UpdateSearchMessageReq 修改搜索消息
+type UpdateSearchMessageReq struct {
+	ChannelID  string   `json:"channel_id"`
+	MessageIDs []string `json:"message_ids"`
 }

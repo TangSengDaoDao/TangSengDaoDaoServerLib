@@ -113,6 +113,8 @@ const (
 	GroupAttrKeyStatus = "status"
 	// GroupAllowViewHistoryMsg 是否允许新成员查看历史消息
 	GroupAllowViewHistoryMsg = "allow_view_history_msg"
+	// GroupAllowMemberPinnedMessage 是否允许成员置顶消息
+	GroupAllowMemberPinnedMessage = "allow_member_pinned_message"
 )
 
 // 命令消息
@@ -163,6 +165,10 @@ const (
 	CMDQuitOrganization = "quitOrganization"
 	// 加入某个组织
 	CMDJoinOrganization = "joinOrganization"
+	// 同步置顶消息
+	CMDSyncPinnedMessage = "syncPinnedMessage"
+	// 消息擦除
+	CMDMessageErase = "messageEerase"
 )
 
 // UserDeviceTokenPrefix 用户设备token缓存前缀
@@ -247,8 +253,10 @@ const (
 	QRCode VercodeType = 3
 	// Friend 好友
 	Friend VercodeType = 4
-	// 手机联系人
+	// MailList 手机联系人
 	MailList VercodeType = 5
+	// InvitationCode 邀请码
+	InvitationCode VercodeType = 6
 )
 
 // QRCodeModel QRCodeModel

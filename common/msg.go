@@ -32,11 +32,14 @@ const (
 	// File 文件
 	File ContentType = 8
 	// MultipleForward 合并转发
-	MultipleForward = 11
+	MultipleForward ContentType = 11
 	// VectorSticker 矢量表情
 	VectorSticker ContentType = 12
 	// EmojiSticker 矢量emoji表情
 	EmojiSticker ContentType = 13
+	// RichText 富文本消息
+	RichText ContentType = 14
+	// Forward 转发消息
 	// InviteJoinOrganization 邀请加入组织
 	InviteJoinOrganization ContentType = 16
 
@@ -87,6 +90,34 @@ const (
 	VideoCallResult ContentType = 9989 // 音视频通话结果
 )
 
+func GetDisplayText(contentType int) string {
+	if contentType == Text.Int() {
+		return "文本消息"
+	} else if contentType == Image.Int() {
+		return "图片消息"
+	} else if contentType == GIF.Int() {
+		return "GIF"
+	} else if contentType == Voice.Int() {
+		return "语音"
+	} else if contentType == Video.Int() {
+		return "视频"
+	} else if contentType == Location.Int() {
+		return "位置"
+	} else if contentType == Card.Int() {
+		return "名片"
+	} else if contentType == File.Int() {
+		return "文件"
+	} else if contentType == MultipleForward.Int() {
+		return "合并转发消息"
+	} else if contentType == VectorSticker.Int() {
+		return "贴纸"
+	} else if contentType == EmojiSticker.Int() {
+		return "emoji"
+	} else if contentType == RichText.Int() {
+		return "富文本消息"
+	}
+	return "未知消息类型"
+}
 func (c ContentType) String() string {
 	switch c {
 	case Text:
