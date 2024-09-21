@@ -520,7 +520,7 @@ func (c *Context) IMDelChannel(req *ChannelDeleteReq) error {
 }
 
 // IMGetWithMessageID 根据消息ID获取消息详情
-func (c *Context) IMGetWithMessageIDsOrCliengMsgNos(req *MsgQueryReq) (*[]MessageResp, error) {
+func (c *Context) IMSearchMessages(req *MsgSearchReq) (*SyncChannelMessageResp, error) {
 	resp, err := network.Post(c.cfg.WuKongIM.APIURL+"/messages", []byte(util.ToJson(req)), nil)
 	if err != nil {
 		return nil, err
@@ -529,7 +529,7 @@ func (c *Context) IMGetWithMessageIDsOrCliengMsgNos(req *MsgQueryReq) (*[]Messag
 	if err != nil {
 		return nil, err
 	}
-	var messageResp *[]MessageResp
+	var messageResp *SyncChannelMessageResp
 	err = util.ReadJsonByByte([]byte(resp.Body), &messageResp)
 	if err != nil {
 		return nil, err
@@ -745,7 +745,7 @@ type MsgRevokeReq struct {
 }
 
 // MsgQueryReq 消息查询请求
-type MsgQueryReq struct {
+type MsgSearchReq struct {
 	LoginUID     string   `json:"login_uid"`      // 登录者UID
 	ChannelID    string   `json:"channel_id"`     // 频道ID
 	ChannelType  uint8    `json:"channel_type"`   // 频道类型
