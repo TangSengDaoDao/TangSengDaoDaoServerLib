@@ -77,9 +77,6 @@ func (c *Context) UpdateIMToken(req UpdateIMTokenReq) (*UpdateIMTokenResp, error
 	if err != nil {
 		return nil, err
 	}
-	if err != nil {
-		return nil, err
-	}
 	err = c.handlerIMError(resp)
 	if err != nil {
 		return nil, err
@@ -522,6 +519,24 @@ func (c *Context) IMDelChannel(req *ChannelDeleteReq) error {
 	return c.handlerIMError(resp)
 }
 
+// IMGetWithMessageID 根据消息ID获取消息详情
+func (c *Context) IMSearchMessages(req *MsgSearchReq) (*SyncChannelMessageResp, error) {
+	resp, err := network.Post(c.cfg.WuKongIM.APIURL+"/messages", []byte(util.ToJson(req)), nil)
+	if err != nil {
+		return nil, err
+	}
+	err = c.handlerIMError(resp)
+	if err != nil {
+		return nil, err
+	}
+	var messageResp *SyncChannelMessageResp
+	err = util.ReadJsonByByte([]byte(resp.Body), &messageResp)
+	if err != nil {
+		return nil, err
+	}
+	return messageResp, nil
+}
+
 // SendRevoke 发送撤回消息
 func (c *Context) SendRevoke(req *MsgRevokeReq) error {
 
@@ -727,6 +742,16 @@ type MsgRevokeReq struct {
 	ChannelID    string `json:"channel_id"`    // 频道ID
 	ChannelType  uint8  `json:"channel_type"`  // 频道类型
 	MessageID    int64  `json:"message_id"`    // 消息ID
+}
+
+// MsgQueryReq 消息查询请求
+type MsgSearchReq struct {
+	LoginUID     string   `json:"login_uid"`      // 登录者UID
+	ChannelID    string   `json:"channel_id"`     // 频道ID
+	ChannelType  uint8    `json:"channel_type"`   // 频道类型
+	MessageSeqs  []uint32 `json:"message_seqs"`   // 消息序列号
+	MessageIds   []int64  `json:"message_ids"`    // 消息ids
+	ClientMsgNos []string `json:"client_msg_nos"` // 客户端消息唯一编号
 }
 
 // UserBaseVo 用户基础信息
