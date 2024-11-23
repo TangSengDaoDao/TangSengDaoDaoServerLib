@@ -143,7 +143,7 @@ type Config struct {
 	UniSMS                 UnismsConfig                 // unisms https://unisms.apistd.com/
 	AliyunSMS              AliyunSMSConfig              // aliyun sms
 	AliyunInternationalSMS AliyunInternationalSMSConfig // 阿里云国际短信
-
+	Smsbao                 SmsbaoConfig                 // 短信宝
 	// ---------- 悟空IM ----------
 	WuKongIM struct {
 		APIURL       string // im基地址
@@ -611,6 +611,11 @@ func (c *Config) ConfigureWithViper(vp *viper.Viper) {
 	c.UniSMS.Signature = c.getString("uniSMS.signature", c.UniSMS.Signature)
 	c.UniSMS.AccessKeySecret = c.getString("uniSMS.accessKeySecret", c.UniSMS.AccessKeySecret)
 	c.UniSMS.TemplateId = c.getString("uniSMS.templateId", c.UniSMS.TemplateId)
+
+	//smsbao
+	c.Smsbao.Account = c.getString("smsbao.account", c.Smsbao.Account)
+	c.Smsbao.APIKey = c.getString("smsbao.apiKey", c.Smsbao.APIKey)
+	c.Smsbao.Template = c.getString("smsbao.template", c.Smsbao.Template)
 	// AliyunSMS
 	c.AliyunSMS.AccessKeyID = c.getString("aliyunSMS.accessKeyID", c.AliyunSMS.AccessKeyID)
 	c.AliyunSMS.AccessSecret = c.getString("aliyunSMS.accessSecret", c.AliyunSMS.AccessSecret)
@@ -945,6 +950,7 @@ const (
 	// SMSProviderAliyun aliyun
 	SMSProviderAliyun SMSProvider = "aliyun"
 	SMSProviderUnisms SMSProvider = "unisms" // 联合短信(https://unisms.apistd.com/docs/api/send/)
+	SMSProviderSmsbao SMSProvider = "smsbao" // 短信宝(https://www.smsbao.com/)
 )
 
 // AliyunSMSConfig 阿里云短信
@@ -989,6 +995,11 @@ type UnismsConfig struct {
 	AccessKeyID     string
 	AccessKeySecret string
 	TemplateId      string
+}
+type SmsbaoConfig struct {
+	Account  string
+	APIKey   string
+	Template string
 }
 
 // AliyunInternationalSMSConfig 阿里云短信
