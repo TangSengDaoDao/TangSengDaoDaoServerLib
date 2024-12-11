@@ -329,7 +329,7 @@ func (c *Context) SendGroupMemberInviteReq(req MsgGroupMemberInviteReq) error {
 		},
 		ChannelID:   req.GroupNo,
 		ChannelType: common.ChannelTypeGroup.Uint8(),
-		Subscribers: req.Subscribers,
+		// Subscribers: req.Subscribers,
 		Payload: []byte(util.ToJson(map[string]interface{}{
 			"content": content,
 			"extra": []UserBaseVo{
