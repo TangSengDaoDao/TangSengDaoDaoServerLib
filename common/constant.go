@@ -183,6 +183,9 @@ const QRCodeCachePrefix = "qrcode:"
 // AuthCodeCachePrefix 授权code
 const AuthCodeCachePrefix = "authcode:"
 
+// DeviceCacheUUIDPrefix 设备UUID前缀
+const DeviceCacheUUIDPrefix = "deviceCacheUUID:"
+
 // AuthCodeType 认证代码类型
 type AuthCodeType string
 

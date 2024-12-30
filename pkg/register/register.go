@@ -92,6 +92,8 @@ type BussDataSource struct {
 	GetFriends func(uid string) ([]*model.FriendResp, error)
 	// 获取群成员资料
 	GetGroupMember func(groupNO string, uid string) (*model.GroupMemberResp, error)
+	// 获取设备信息
+	GetDevice func(ids []int64) ([]*model.DeviceResp, error)
 }
 
 // 模块
