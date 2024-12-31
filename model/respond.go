@@ -26,3 +26,11 @@ type GroupMemberResp struct {
 	CreatedAt          string // 加入时间
 	ForbiddenExpirTime int64  // 禁言时长
 }
+
+type DeviceResp struct {
+	ID          int64  // 设备id
+	DeviceID    string // 设备号
+	DeviceName  string // 设备名称
+	UID         string // 用户id
+	DeviceModel string // 设备型号
+}

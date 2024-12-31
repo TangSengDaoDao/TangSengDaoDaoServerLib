@@ -318,7 +318,7 @@ func (c *Context) SendGroupTransferGrouper(req MsgGroupTransferGrouper) error {
 		}))})
 }
 
-// SendGroupMemberInviteReq 群主转让
+// SendGroupMemberInviteReq 邀请入群消息
 func (c *Context) SendGroupMemberInviteReq(req MsgGroupMemberInviteReq) error {
 	content := fmt.Sprintf(`“{0}“想邀请%d位朋友加入群聊`, req.Num)
 	return c.SendMessage(&MsgSendReq{
