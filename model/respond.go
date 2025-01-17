@@ -35,6 +35,11 @@ type DeviceResp struct {
 	DeviceModel string // 设备型号
 }
 type CallingChannelResp struct {
-	ChannelID   string // 通话频道id
-	ChannelType uint8  // 通话频道类型
+	ChannelID    string // 通话频道id
+	ChannelType  uint8  // 通话频道类型
+	Participants []*BaseUserVO
+}
+type BaseUserVO struct {
+	UID  string // 用户id
+	Name string // 用户名称
 }
