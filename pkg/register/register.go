@@ -95,7 +95,7 @@ type BussDataSource struct {
 	// 获取设备信息
 	GetDevice func(ids []int64) ([]*model.DeviceResp, error)
 	// 获取通话中的频道
-	GetCallingChannel func(channelIds []string) ([]*model.CallingChannelResp, error)
+	GetCallingChannel func(loginUID string, channelIds []string) ([]*model.CallingChannelResp, error)
 }
 
 // 模块
