@@ -519,6 +519,25 @@ func (c *Context) IMDelChannel(req *ChannelDeleteReq) error {
 	return c.handlerIMError(resp)
 }
 
+// IMSearchUserMessages 搜索用户消息
+func (c *Context) IMSearchUserMessages(req *SearchUserMessageReq) (*SearchUserMessageResp, error) {
+	resp, err := network.Post(c.cfg.WuKongIM.APIURL+"/plugins/wk.plugin.search/usersearch", []byte(util.ToJson(req)), nil)
+	if err != nil {
+		return nil, err
+	}
+	err = c.handlerIMError(resp)
+	if err != nil {
+		return nil, err
+	}
+	println(resp.Body)
+	var messageResp *SearchUserMessageResp
+	err = util.ReadJsonByByte([]byte(resp.Body), &messageResp)
+	if err != nil {
+		return nil, err
+	}
+	return messageResp, nil
+}
+
 // IMGetWithMessageID 根据消息ID获取消息详情
 func (c *Context) IMSearchMessages(req *MsgSearchReq) (*SyncChannelMessageResp, error) {
 	resp, err := network.Post(c.cfg.WuKongIM.APIURL+"/messages", []byte(util.ToJson(req)), nil)
@@ -744,7 +763,23 @@ type MsgRevokeReq struct {
 	MessageID    int64  `json:"message_id"`    // 消息ID
 }
 
-// MsgQueryReq 消息查询请求
+// SearchUserMessageReq 用户消息搜索
+type SearchUserMessageReq struct {
+	UID          string                 `json:"uid"`           // 当前用户uid（限制搜索指定用户的消息）
+	Payload      map[string]interface{} `json:"payload"`       // 消息payload，支持搜索自定义字段
+	PayloadTypes []int                  `json:"payload_types"` // 消息类型搜索
+	FromUID      string                 `json:"from_uid"`      // 发送者uid
+	ChannelID    string                 `json:"channel_id"`    // 频道ID
+	ChannelType  uint8                  `json:"channel_type"`  // 频道类型
+	Topic        string                 `json:"topic"`         // 根据topic搜索
+	Limit        int                    `json:"limit"`         // 查询限制数量
+	Page         int                    `json:"page"`          // 页码，分页使用，默认为1
+	StartTime    int64                  `json:"start_time"`    //  消息时间（开始）
+	EndTime      int64                  `json:"end_time"`      // 消息时间（结束，结果不包含end_time）
+	Highlights   []string               `json:"highlights"`    // 搜索关键字是否高亮显示， 比如payload.content="你是北京大学的吗" 搜索关键字:"北京" 那么highlights设置为["payload.content"] 这样payload.content返回的内容为带上mark标签为："你是<mark>北京</mark>大学的吗"
+}
+
+// MsgSearchReq 消息查询请求
 type MsgSearchReq struct {
 	LoginUID     string   `json:"login_uid"`      // 登录者UID
 	ChannelID    string   `json:"channel_id"`     // 频道ID
@@ -910,20 +945,21 @@ func encodeBool(b bool) (i int) {
 
 // MessageResp 消息
 type MessageResp struct {
-	Header      MsgHeader         `json:"header"`              // 消息头
-	Setting     uint8             `json:"setting"`             // 设置
-	MessageID   int64             `json:"message_id"`          // 服务端的消息ID(全局唯一)
-	MessageSeq  uint32            `json:"message_seq"`         // 消息序列号 （用户唯一，有序递增）
-	ClientMsgNo string            `json:"client_msg_no"`       // 客户端消息唯一编号
-	Expire      uint32            `json:"expire"`              // 消息过期时间
-	FromUID     string            `json:"from_uid"`            // 发送者UID
-	ToUID       string            `json:"to_uid"`              // 接受者uid
-	ChannelID   string            `json:"channel_id"`          // 频道ID
-	ChannelType uint8             `json:"channel_type"`        // 频道类型
-	Timestamp   int32             `json:"timestamp"`           // 服务器消息时间戳(10位，到秒)
-	Payload     []byte            `json:"payload"`             // 消息内容
-	StreamNo    string            `json:"stream_no,omitempty"` // 流编号
-	Streams     []*StreamItemResp `json:"streams,omitempty"`   // 消息流
+	Header       MsgHeader         `json:"header"`              // 消息头
+	Setting      uint8             `json:"setting"`             // 设置
+	MessageIDStr string            `json:"message_idstr"`       // 消息字符串ID
+	MessageID    int64             `json:"message_id"`          // 服务端的消息ID(全局唯一)
+	MessageSeq   uint32            `json:"message_seq"`         // 消息序列号 （用户唯一，有序递增）
+	ClientMsgNo  string            `json:"client_msg_no"`       // 客户端消息唯一编号
+	Expire       uint32            `json:"expire"`              // 消息过期时间
+	FromUID      string            `json:"from_uid"`            // 发送者UID
+	ToUID        string            `json:"to_uid"`              // 接受者uid
+	ChannelID    string            `json:"channel_id"`          // 频道ID
+	ChannelType  uint8             `json:"channel_type"`        // 频道类型
+	Timestamp    int32             `json:"timestamp"`           // 服务器消息时间戳(10位，到秒)
+	Payload      []byte            `json:"payload"`             // 消息内容
+	StreamNo     string            `json:"stream_no,omitempty"` // 流编号
+	Streams      []*StreamItemResp `json:"streams,omitempty"`   // 消息流
 	// ReplyCount    int            `json:"reply_count,omitempty"`     // 回复集合
 	// ReplyCountSeq string         `json:"reply_count_seq,omitempty"` // 回复数量seq
 	// ReplySeq      string         `json:"reply_seq,omitempty"`       // 回复seq
@@ -1046,4 +1082,12 @@ type SubscriberRemoveReq struct {
 type UpdateSearchMessageReq struct {
 	ChannelID  string   `json:"channel_id"`
 	MessageIDs []string `json:"message_ids"`
+}
+
+// SearchUserMessageResp 搜索用户消息结果
+type SearchUserMessageResp struct {
+	Total    int64          `json:"total"`    // 消息总量
+	Limit    int            `json:"limit"`    // 查询数量
+	Page     int            `json:"page"`     // 当前页码
+	Messages []*MessageResp `json:"messages"` // 消息
 }
