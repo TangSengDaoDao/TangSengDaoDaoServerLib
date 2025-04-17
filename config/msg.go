@@ -529,7 +529,6 @@ func (c *Context) IMSearchUserMessages(req *SearchUserMessageReq) (*SearchUserMe
 	if err != nil {
 		return nil, err
 	}
-	println(resp.Body)
 	var messageResp *SearchUserMessageResp
 	err = util.ReadJsonByByte([]byte(resp.Body), &messageResp)
 	if err != nil {
