@@ -73,12 +73,23 @@ func RemoveRepeatedElement(arr []string) (newArr []string) {
 	return
 }
 
+// RemoveElement 从切片中删除元素
+func RemoveElement(slice []string, target string) []string {
+	result := make([]string, 0, len(slice))
+	for _, item := range slice {
+		if item != target {
+			result = append(result, item)
+		}
+	}
+	return result
+}
+
 // GetRandomSalt return len=8  salt
 func GetRandomSalt() string {
 	return GetRandomString(8)
 }
 
-//GetRandomString 生成随机字符串
+// GetRandomString 生成随机字符串
 func GetRandomString(num int) string {
 	str := "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	bytes := []byte(str)

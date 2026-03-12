@@ -197,6 +197,13 @@ type Config struct {
 		InviteTimeoutSeconds int    // 邀请超时时间（单位秒）
 		RoomMaxCount         int    // 房间最大参与人数
 	}
+	// ---------- Tgortc ----------
+	Tgortc struct {
+		Off             bool   // 是否关闭tgortc功能
+		URL             string // tgotrc 服务地址
+		Secret          string // tgotrc webhook secret
+		MaxParticipants int    // 最大参与人数
+	}
 	// ---------- 注册 ----------
 	Register struct {
 		Off           bool // 是否关闭注册
@@ -453,6 +460,16 @@ func New() *Config {
 			InviteTimeoutSeconds: 60,
 			RoomMaxCount:         9,
 		},
+		// ---------- Tgortc ----------
+		Tgortc: struct {
+			Off             bool
+			URL             string
+			Secret          string
+			MaxParticipants int
+		}{
+			Off:             false,
+			MaxParticipants: 9,
+		},
 		// ---------- 好友设置  --------
 
 		Friend: struct {
@@ -691,6 +708,11 @@ func (c *Config) ConfigureWithViper(vp *viper.Viper) {
 	c.Livekit.APISecret = c.getString("livekit.apiSecret", c.Livekit.APISecret)
 	c.Livekit.RoomMaxCount = c.getInt("livekit.roomMaxCount", c.Livekit.RoomMaxCount)
 	c.Livekit.InviteTimeoutSeconds = c.getInt("livekit.inviteTimeoutSeconds", c.Livekit.InviteTimeoutSeconds)
+	// ################### Tgortc ####################
+	c.Tgortc.Off = c.getBool("tgortc.off", c.Tgortc.Off)
+	c.Tgortc.URL = c.getString("tgortc.url", c.Tgortc.URL)
+	c.Tgortc.Secret = c.getString("tgortc.secret", c.Tgortc.Secret)
+	c.Tgortc.MaxParticipants = c.getInt("tgortc.maxParticipants", c.Tgortc.MaxParticipants)
 	//#################### register ####################
 	c.Register.Off = c.getBool("register.off", c.Register.Off)
 	c.Register.OnlyChina = c.getBool("register.onlyChina", c.Register.OnlyChina)

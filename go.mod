@@ -16,6 +16,7 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.17
 	github.com/olivere/elastic v6.2.37+incompatible
 	github.com/opentracing/opentracing-go v1.2.0
+	github.com/panjf2000/ants/v2 v2.10.0
 	github.com/rubenv/sql-migrate v1.5.2
 	github.com/sendgrid/rest v2.6.9+incompatible
 	github.com/sourcegraph/syntaxhighlight v0.0.0-20170531221838-bd320f5d308e
@@ -86,7 +87,6 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/onsi/ginkgo v1.16.5 // indirect
 	github.com/onsi/gomega v1.27.10 // indirect
-	github.com/panjf2000/ants/v2 v2.10.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.8 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
