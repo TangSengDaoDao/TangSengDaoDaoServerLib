@@ -343,7 +343,7 @@ func (c *Context) IMClearConversationUnread(req ClearConversationUnreadReq) erro
 
 	resp, err := network.Post(c.cfg.WuKongIM.APIURL+"/conversations/setUnread", []byte(util.ToJson(req)), nil)
 	if err != nil {
-		return nil
+		return err
 	}
 	return c.handlerIMError(resp)
 }
