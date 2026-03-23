@@ -5,6 +5,7 @@ import (
 
 	"github.com/TangSengDaoDao/TangSengDaoDaoServerLib/config"
 	"github.com/TangSengDaoDao/TangSengDaoDaoServerLib/module"
+	"github.com/TangSengDaoDao/TangSengDaoDaoServerLib/pkg/wkhttp"
 	"github.com/TangSengDaoDao/TangSengDaoDaoServerLib/server"
 )
 
@@ -38,7 +39,7 @@ func NewTestServer(args ...string) (*server.Server, *config.Context) {
 	}
 
 	// ctx.Event = event.New(ctx)
-	err = ctx.Cache().Set(cfg.Cache.TokenCachePrefix+Token, UID+"@test")
+	err = ctx.Cache().Set(cfg.Cache.TokenCachePrefix+Token, wkhttp.EncodeTokenCacheInfo(UID, "test", string(wkhttp.SuperAdmin)))
 	if err != nil {
 		panic(err)
 	}
