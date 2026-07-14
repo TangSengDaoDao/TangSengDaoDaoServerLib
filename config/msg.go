@@ -796,14 +796,15 @@ type UserBaseVo struct {
 
 // MsgSendReq 发送消息请求
 type MsgSendReq struct {
-	Header      MsgHeader `json:"header"`       // 消息头
-	Setting     uint8     `json:"setting"`      // setting
-	FromUID     string    `json:"from_uid"`     // 模拟发送者的UID
-	ChannelID   string    `json:"channel_id"`   // 频道ID
-	ChannelType uint8     `json:"channel_type"` // 频道类型
-	StreamNo    string    `json:"stream_no"`    // 消息流号
-	Subscribers []string  `json:"subscribers"`  // 订阅者 如果此字段有值，表示消息只发给指定的订阅者
-	Payload     []byte    `json:"payload"`      // 消息内容
+	Header      MsgHeader `json:"header"`                  // 消息头
+	Setting     uint8     `json:"setting"`                 // setting
+	ClientMsgNo string    `json:"client_msg_no,omitempty"` // 客户端消息唯一编号，用于发送幂等
+	FromUID     string    `json:"from_uid"`                // 模拟发送者的UID
+	ChannelID   string    `json:"channel_id"`              // 频道ID
+	ChannelType uint8     `json:"channel_type"`            // 频道类型
+	StreamNo    string    `json:"stream_no"`               // 消息流号
+	Subscribers []string  `json:"subscribers"`             // 订阅者 如果此字段有值，表示消息只发给指定的订阅者
+	Payload     []byte    `json:"payload"`                 // 消息内容
 }
 
 type MsgSendResp struct {
