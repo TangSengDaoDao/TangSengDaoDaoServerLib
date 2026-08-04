@@ -12,10 +12,10 @@ type RedisCache struct {
 	conn *redis.Conn
 }
 
-// NewRedisCache 创建
-func NewRedisCache(addr string, password string) *RedisCache {
+// NewRedisCache 创建,db为redis数据库编号(0-15),不传默认为0
+func NewRedisCache(addr string, password string, db ...int) *RedisCache {
 	r := &RedisCache{}
-	r.conn = redis.New(addr, password)
+	r.conn = redis.New(addr, password, db...)
 	return r
 }
 
