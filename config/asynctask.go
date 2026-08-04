@@ -35,8 +35,8 @@ func NewAsyncTask(cfg *Config) *AsyncTask {
 			DelayedTasksPollPeriod: 500,
 		},
 	}
-	broker := redisbroker.NewGR(cnf, []string{cfg.DB.AsynctaskRedisAddr}, 0)
-	backend := redisbackend.NewGR(cnf, []string{cfg.DB.AsynctaskRedisAddr}, 0)
+	broker := redisbroker.NewGR(cnf, []string{cfg.DB.AsynctaskRedisAddr}, cfg.DB.RedisDB)
+	backend := redisbackend.NewGR(cnf, []string{cfg.DB.AsynctaskRedisAddr}, cfg.DB.RedisDB)
 	lock := eagerlock.New()
 
 	t := &AsyncTask{

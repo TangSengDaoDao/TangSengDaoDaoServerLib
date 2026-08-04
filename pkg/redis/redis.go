@@ -16,12 +16,18 @@ type Conn struct {
 	client *rd.Client
 }
 
-func New(addr string, password string) *Conn {
+// New 创建一个redis连接,db为redis数据库编号(0-15),不传默认为0
+func New(addr string, password string, db ...int) *Conn {
 	c := &Conn{}
+	rdDB := 0
+	if len(db) > 0 {
+		rdDB = db[0]
+	}
 	c.client = rd.NewClient(&rd.Options{
 		Addr:       addr,
 		MaxRetries: 3, // 失败重试次数
 		Password:   password,
+		DB:         rdDB,
 	})
 	return c
 }
