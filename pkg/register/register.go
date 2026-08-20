@@ -47,6 +47,13 @@ type ModuleFnc func(ctx interface{}) Module
 
 var modules = make([]ModuleFnc, 0)
 
+// migrationSources are registered directly from module init functions. They
+// deliberately do not require a runtime context or construct a Module, so a
+// controlled migration process can enumerate embedded SQL without starting
+// HTTP routes, workers, RTC services, or module constructors.
+var migrationSources = make([]*SQLFS, 0)
+var migrationSourcesMu sync.RWMutex
+
 type IMDatasourceType int
 
 const (
@@ -135,6 +142,39 @@ func NewSQLFS(fs embed.FS) *SQLFS {
 	return &SQLFS{
 		FS: fs,
 	}
+}
+
+// AddMigrationSource registers an embedded SQL source for the explicit
+// migration lifecycle. A nil source has no migration data and is ignored.
+func AddMigrationSource(source *SQLFS) {
+	if source == nil {
+		return
+	}
+	migrationSourcesMu.Lock()
+	migrationSources = append(migrationSources, cloneSQLFS(source))
+	migrationSourcesMu.Unlock()
+}
+
+// GetMigrationSources returns value copies so callers cannot mutate either the
+// registry slice or its SQLFS wrappers. embed.FS is immutable after compile
+// time, so copying its value is sufficient and does not duplicate file data.
+// Unlike GetModules, this function never receives or creates a runtime
+// context and never executes module factories.
+func GetMigrationSources() []*SQLFS {
+	migrationSourcesMu.RLock()
+	defer migrationSourcesMu.RUnlock()
+	sources := make([]*SQLFS, len(migrationSources))
+	for index, source := range migrationSources {
+		sources[index] = cloneSQLFS(source)
+	}
+	return sources
+}
+
+func cloneSQLFS(source *SQLFS) *SQLFS {
+	if source == nil {
+		return nil
+	}
+	return &SQLFS{FS: source.FS}
 }
 
 var once sync.Once

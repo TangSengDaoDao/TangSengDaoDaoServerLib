@@ -18,6 +18,10 @@ func Setup(ctx *config.Context) error {
 	// 获取所有模块
 	ms := register.GetModules(ctx)
 
+	// Legacy compatibility path. New applications must execute schema changes
+	// through an explicit migration process and use SetupRuntime for ordinary
+	// service startup. Keep the former behavior here for downstream consumers
+	// that have not yet moved to the explicit lifecycle.
 	// 初始化SQL
 	var sqlfss []*register.SQLFS
 	for _, m := range ms {
@@ -29,6 +33,20 @@ func Setup(ctx *config.Context) error {
 	err := executeSQL(sqlfss, ctx.DB())
 	if err != nil {
 		return err
+	}
+	return setupRuntimeModules(ctx, ms)
+
+}
+
+// SetupRuntime registers APIs and optional tasks only. It must be used by
+// ordinary Server startup so a restart cannot execute schema migration.
+func SetupRuntime(ctx *config.Context) error {
+	return setupRuntimeModules(ctx, register.GetModules(ctx))
+}
+
+func setupRuntimeModules(ctx *config.Context, ms []register.Module) error {
+	if ctx == nil || ctx.GetHttpRoute() == nil {
+		return fmt.Errorf("runtime setup requires an HTTP route")
 	}
 	// 注册api
 	for _, m := range ms {
@@ -48,7 +66,12 @@ func Setup(ctx *config.Context) error {
 		}
 	}
 	return nil
+}
 
+// RegisteredMigrationSource exposes only the SQLFS registry. Calling it does
+// not instantiate modules or create a business runtime context.
+func RegisteredMigrationSource() FileDirMigrationSource {
+	return FileDirMigrationSource{sqlfss: register.GetMigrationSources()}
 }
 
 func Start(ctx *config.Context) error {
@@ -138,9 +161,13 @@ func (f FileDirMigrationSource) findMigrations(fs *register.SQLFS, migrations *[
 				return fmt.Errorf("error while opening %s: %s", info.Name(), err)
 			}
 
-			migration, err := migrate.ParseMigration(info.Name(), file.(io.ReadSeeker))
-			if err != nil {
-				return fmt.Errorf("error while parsing %s: %s", info.Name(), err)
+			migration, parseErr := migrate.ParseMigration(info.Name(), file.(io.ReadSeeker))
+			closeErr := file.Close()
+			if parseErr != nil {
+				return fmt.Errorf("error while parsing %s: %s", info.Name(), parseErr)
+			}
+			if closeErr != nil {
+				return fmt.Errorf("error while closing %s: %s", info.Name(), closeErr)
 			}
 			*migrations = append(*migrations, migration)
 
