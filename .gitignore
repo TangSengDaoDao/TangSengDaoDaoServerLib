@@ -30,3 +30,9 @@ logs/
 
 wukongimdata/
 tsdddata/
+
+# Local Figma exports and caches
+**/.figma-cache/
+**/figma-cache/
+**/my-figma/
+**/docs/figma/
