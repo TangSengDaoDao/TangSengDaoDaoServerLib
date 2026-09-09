@@ -41,6 +41,21 @@ func (rc *Conn) SetAndExpire(key string, value interface{}, expire time.Duration
 	return rc.client.Set(key, value, expire).Err()
 }
 
+// SetNXAndExpire 仅当 key 不存在时设置值和有效期，整个操作是原子的。
+func (rc *Conn) SetNXAndExpire(key string, value interface{}, expire time.Duration) (bool, error) {
+	return rc.client.SetNX(key, value, expire).Result()
+}
+
+// CompareAndDelete 仅删除值仍匹配的 key，避免误删过期后其他请求持有的锁。
+func (rc *Conn) CompareAndDelete(key, value string) error {
+	return rc.client.Eval(`
+		if redis.call('GET', KEYS[1]) == ARGV[1] then
+			return redis.call('DEL', KEYS[1])
+		end
+		return 0
+	`, []string{key}, value).Err()
+}
+
 func (rc *Conn) GetString(key string) (string, error) {
 	val, err := rc.client.Get(key).Result()
 	if err == rd.Nil {
