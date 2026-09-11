@@ -151,6 +151,10 @@ func (c *Context) SendMessageWithResult(req *MsgSendReq) (*MsgSendResp, error) {
 		return nil, fmt.Errorf("IM服务[SendMessage]返回状态[%d]失败！", resp.StatusCode)
 	} else {
 		dataResult := gjson.Get(resp.Body, "data")
+		if !dataResult.Exists() {
+			// v3 returns the committed identity directly; older integrations wrap it in data.
+			dataResult = gjson.Parse(resp.Body)
+		}
 
 		messageID := dataResult.Get("message_id").Int()
 		messageSeq := dataResult.Get("message_seq").Int()
