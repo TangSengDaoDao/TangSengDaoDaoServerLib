@@ -234,14 +234,15 @@ type Config struct {
 	}
 	// ---------- push ----------
 	Push struct {
-		ContentDetailOn bool         //  推送是否显示正文详情(如果为false，则只显示“您有一条新的消息” 默认为true)
-		PushPoolSize    int64        // 推送任务池大小
-		APNS            APNSPush     // 苹果推送
-		MI              MIPush       // 小米推送
-		HMS             HMSPush      // 华为推送
-		VIVO            VIVOPush     // vivo推送
-		OPPO            OPPOPush     // oppo推送
-		FIREBASE        FIREBASEPush // FIREBASE推送
+		ContentDetailOn bool          //  推送是否显示正文详情(如果为false，则只显示“您有一条新的消息” 默认为true)
+		PushPoolSize    int64         // 推送任务池大小
+		APNS            APNSPush      // 苹果推送
+		MI              MIPush        // 小米推送
+		HMS             HMSPush       // Android 华为推送
+		HARMONYOS       HarmonyOSPush // 原生 HarmonyOS 推送
+		VIVO            VIVOPush      // vivo推送
+		OPPO            OPPOPush      // oppo推送
+		FIREBASE        FIREBASEPush  // FIREBASE推送
 	}
 	// ---------- message ----------
 	Message struct {
@@ -492,6 +493,7 @@ func New() *Config {
 			APNS            APNSPush
 			MI              MIPush
 			HMS             HMSPush
+			HARMONYOS       HarmonyOSPush
 			VIVO            VIVOPush
 			OPPO            OPPOPush
 			FIREBASE        FIREBASEPush
@@ -744,6 +746,11 @@ func (c *Config) ConfigureWithViper(vp *viper.Viper) {
 	c.Push.HMS.PackageName = c.getString("push.hms.packageName", c.Push.HMS.PackageName)
 	c.Push.HMS.AppID = c.getString("push.hms.appID", c.Push.HMS.AppID)
 	c.Push.HMS.AppSecret = c.getString("push.hms.appSecret", c.Push.HMS.AppSecret)
+	// 原生 HarmonyOS 推送
+	c.Push.HARMONYOS.BundleID = c.getString("push.harmonyos.bundleID", c.Push.HARMONYOS.BundleID)
+	c.Push.HARMONYOS.ServiceAccountFile = c.getString("push.harmonyos.serviceAccountFile", c.Push.HARMONYOS.ServiceAccountFile)
+	c.Push.HARMONYOS.Category = c.getString("push.harmonyos.category", c.Push.HARMONYOS.Category)
+	c.Push.HARMONYOS.TestMessage = c.getBool("push.harmonyos.testMessage", c.Push.HARMONYOS.TestMessage)
 	// 小米推送
 	c.Push.MI.PackageName = c.getString("push.mi.packageName", c.Push.MI.PackageName)
 	c.Push.MI.AppID = c.getString("push.mi.appID", c.Push.MI.AppID)
@@ -1073,6 +1080,14 @@ type HMSPush struct {
 	PackageName string
 	AppID       string
 	AppSecret   string
+}
+
+// HarmonyOSPush 原生 HarmonyOS 推送配置。
+type HarmonyOSPush struct {
+	BundleID           string // 应用包名，与客户端上报的 bundle_id 一致
+	ServiceAccountFile string // 华为推送服务账号 JSON 文件路径
+	Category           string // 通知自分类，取得对应权益后可填 IM
+	TestMessage        bool   // 是否发送测试消息
 }
 
 // 小米推送
