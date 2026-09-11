@@ -148,6 +148,12 @@ type Config struct {
 	WuKongIM struct {
 		APIURL       string // im基地址
 		ManagerToken string // im的管理者token wukongim配置了就需要填写，没配置就不需要
+		// V3ExplicitCMDBindings enables explicit v3 offline CMD discovery; requires batch binding support.
+		V3ExplicitCMDBindings bool
+		// V3SystemUID must match the IM API system_uid used for an omitted sender.
+		V3SystemUID string
+		// CMDSyncAPIURL pins sync and syncack to the same IM process; no silent fallback is safe.
+		CMDSyncAPIURL string
 	}
 	// ---------- 头像 ----------
 	Avatar struct {
@@ -381,10 +387,14 @@ func New() *Config {
 
 		// ---------- wukongim ----------
 		WuKongIM: struct {
-			APIURL       string
-			ManagerToken string
+			APIURL                string
+			ManagerToken          string
+			V3ExplicitCMDBindings bool
+			V3SystemUID           string
+			CMDSyncAPIURL         string
 		}{
-			APIURL: "http://127.0.0.1:5001",
+			APIURL:      "http://127.0.0.1:5001",
+			V3SystemUID: "____system",
 		},
 
 		// ---------- avatar ----------
@@ -669,6 +679,9 @@ func (c *Config) ConfigureWithViper(vp *viper.Viper) {
 	//#################### 悟空IM ####################
 	c.WuKongIM.APIURL = c.getString("wukongIM.apiURL", c.WuKongIM.APIURL)
 	c.WuKongIM.ManagerToken = c.getString("wukongIM.managerToken", c.WuKongIM.ManagerToken)
+	c.WuKongIM.V3ExplicitCMDBindings = c.getBool("wukongIM.v3ExplicitCMDBindings", c.WuKongIM.V3ExplicitCMDBindings)
+	c.WuKongIM.V3SystemUID = c.getString("wukongIM.v3SystemUID", c.WuKongIM.V3SystemUID)
+	c.WuKongIM.CMDSyncAPIURL = c.getString("wukongIM.cmdSyncAPIURL", c.WuKongIM.CMDSyncAPIURL)
 
 	//#################### 头像 ####################
 	c.Avatar.Default = c.getString("avatar.default", c.Avatar.Default)

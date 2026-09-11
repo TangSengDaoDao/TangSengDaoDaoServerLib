@@ -134,6 +134,9 @@ func (c *Context) SendMessage(req *MsgSendReq) error {
 
 // SendMessage 发送消息
 func (c *Context) SendMessageWithResult(req *MsgSendReq) (*MsgSendResp, error) {
+	if err := c.ensureV3CMDDiscovery(req); err != nil {
+		return nil, err
+	}
 	resp, err := network.Post(c.cfg.WuKongIM.APIURL+"/message/send", []byte(util.ToJson(req)), nil)
 	if err != nil {
 		return nil, err
@@ -235,7 +238,10 @@ func (c *Context) IMCreateOrUpdateChannel(req *ChannelCreateReq) error {
 	if err != nil {
 		return err
 	}
-	return c.handlerIMError(resp)
+	if err := c.handlerIMError(resp); err != nil {
+		return err
+	}
+	return c.updateV3SourceBindings(req.Subscribers, req.ChannelID, req.ChannelType, false)
 }
 
 // IMBlacklistAdd 添加黑名单
@@ -300,6 +306,9 @@ func (c *Context) IMWhitelistRemove(req ChannelWhitelistReq) error {
 
 // IMAddSubscriber 请求IM创建频道
 func (c *Context) IMAddSubscriber(req *SubscriberAddReq) error {
+	if c.cfg.WuKongIM.V3ExplicitCMDBindings && req.Reset != 0 {
+		return fmt.Errorf("v3 CMD binding requires explicit member removals before a subscription reset")
+	}
 
 	resp, err := network.Post(c.cfg.WuKongIM.APIURL+"/channel/subscriber_add", []byte(util.ToJson(req)), nil)
 	if err != nil {
@@ -308,7 +317,7 @@ func (c *Context) IMAddSubscriber(req *SubscriberAddReq) error {
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("IM服务[IMAddSubscriber]返回状态[%d]失败！", resp.StatusCode)
 	}
-	return nil
+	return c.updateV3SourceBindings(req.Subscribers, req.ChannelID, req.ChannelType, false)
 }
 
 // IMRemoveSubscriber 请求IM创建频道
@@ -318,7 +327,10 @@ func (c *Context) IMRemoveSubscriber(req *SubscriberRemoveReq) error {
 	if err != nil {
 		return err
 	}
-	return c.handlerIMError(resp)
+	if err := c.handlerIMError(resp); err != nil {
+		return err
+	}
+	return c.updateV3SourceBindings(req.Subscribers, req.ChannelID, req.ChannelType, true)
 }
 
 // IMGetConversations 获取用户最近会话列表
@@ -468,7 +480,7 @@ func (c *Context) IMSyncChannelMessage(req SyncChannelMessageReq) (*SyncChannelM
 // IMSyncMessage 同步IM消息
 func (c *Context) IMSyncMessage(req *MsgSyncReq) ([]*MessageResp, error) {
 
-	resp, err := network.Post(c.cfg.WuKongIM.APIURL+"/message/sync", []byte(util.ToJson(req)), nil)
+	resp, err := network.Post(c.cmdSyncAPIURL()+"/message/sync", []byte(util.ToJson(req)), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -487,7 +499,7 @@ func (c *Context) IMSyncMessage(req *MsgSyncReq) ([]*MessageResp, error) {
 // IMSyncMessageAck 同步IM消息回执
 func (c *Context) IMSyncMessageAck(req *SyncackReq) error {
 
-	resp, err := network.Post(c.cfg.WuKongIM.APIURL+"/message/syncack", []byte(util.ToJson(req)), nil)
+	resp, err := network.Post(c.cmdSyncAPIURL()+"/message/syncack", []byte(util.ToJson(req)), nil)
 	if err != nil {
 		return err
 	}
