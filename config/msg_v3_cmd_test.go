@@ -74,7 +74,7 @@ func TestV3PersonCMDUsesIMSystemIdentity(t *testing.T) {
 		t.Fatal(err)
 	}
 	got := (*requests)[0].Body
-	if got["channel_id"] != "u2@native-system" && got["channel_id"] != "native-system@u2" {
+	if got["channel_id"] != "native-system@u2" {
 		t.Fatalf("wrong source %v", got)
 	}
 	if strings.Contains(got["channel_id"].(string), "business-system") {
