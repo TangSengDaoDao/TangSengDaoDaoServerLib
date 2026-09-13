@@ -101,7 +101,7 @@ func (c *Context) DB() *dbr.Session {
 // NewRedisCache 创建一个redis缓存
 func (c *Context) NewRedisCache() *common.RedisCache {
 	if c.redisCache == nil {
-		c.redisCache = common.NewRedisCache(c.cfg.DB.RedisAddr, c.cfg.DB.RedisPass)
+		c.redisCache = common.NewRedisCache(c.cfg.DB.RedisAddr, c.cfg.DB.RedisPass, c.cfg.DB.RedisDB)
 	}
 	return c.redisCache
 }
